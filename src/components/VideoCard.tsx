@@ -40,10 +40,11 @@ const VideoCard: React.FC<VideoCardProps> = ({
           loading="lazy"
         />
         
-        {/* 🔥 크게 보기 모드: 배경 그라데이션과 제목 4줄을 확실히 강제 적용 */}
+        {/* 🔥 크게 보기 모드: 하단에 둥근 반투명 블랙 박스 배치 */}
         {viewMode === 'large' && (
-          <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent p-5 flex flex-col justify-end z-10">
-            <h3 className="text-white text-base font-bold leading-tight line-clamp-4 mb-3 group-hover:text-pink-100 transition-colors">
+          <div className="absolute inset-x-3 bottom-3 bg-black/60 backdrop-blur-md p-4 rounded-2xl z-10 border border-white/10">
+            {/* 제목: 4줄까지 표시 */}
+            <h3 className="text-white text-sm md:text-base font-bold leading-tight line-clamp-4 mb-2 group-hover:text-pink-100 transition-colors">
               {title}
             </h3>
             
@@ -56,7 +57,7 @@ const VideoCard: React.FC<VideoCardProps> = ({
                     e.stopPropagation(); 
                     if (onTagClick) onTagClick(tag);
                   }}
-                  className="px-2.5 py-0.5 bg-white/20 hover:bg-[#FF66C4] text-white rounded-full text-xs font-medium backdrop-blur-sm transition-colors cursor-pointer"
+                  className="px-2 py-0.5 bg-white/20 hover:bg-[#FF66C4] text-white rounded-full text-[10px] md:text-xs font-medium transition-colors"
                 >
                   #{tag}
                 </button>
