@@ -73,17 +73,18 @@ function App() {
   const breakpointColumns = { default: 5, 1536: 5, 1280: 4, 1024: 3, 768: 2, 640: 1 };
 
   return (
-    // overflow-x-hidden: 모바일에서 화면이 가로로 흔들리는 현상 완벽 차단
     <div className="min-h-screen bg-gradient-to-br from-[#fff0f5] via-white via-40% to-[#f0f8ff] text-black overflow-x-hidden w-full">
       
-      {/* 1. 헤더 영역: 모바일에서 로고와 버튼이 겹치지 않게 세로(flex-col) 배치 적용 */}
+      {/* 1. 헤더 영역 */}
       <div className="max-w-[1920px] mx-auto px-4 sm:px-8 pt-6 md:pt-10 pb-6 flex flex-col md:flex-row items-start md:items-end justify-between gap-4 md:gap-6">
         <div className="flex items-center md:items-end gap-3 md:gap-4 leading-none">
-          <img src={logoImg} alt="Logo" className="h-10 sm:h-12 md:h-16 w-auto object-contain" />
-          {/* 타이틀 크기 모바일 대응: text-4xl로 줄여서 밀어내기 방지 */}
-          <h1 className="text-4xl md:text-7xl font-black tracking-tighter">SCRAP ROE</h1>
+          {/* 로고 크기 증가: h-10 -> h-12 */}
+          <img src={logoImg} alt="Logo" className="h-12 sm:h-14 md:h-16 w-auto object-contain" />
+          {/* 타이틀 크기 증가: text-4xl -> text-5xl */}
+          <h1 className="text-5xl md:text-7xl font-black tracking-tighter">SCRAP ROE</h1>
         </div>
-        <div className="flex gap-2 md:gap-3">
+        {/* 모바일 우측 정렬: self-end 추가 */}
+        <div className="flex gap-2 md:gap-3 self-end md:self-auto">
           <button onClick={() => setIsAddOpen(true)} className="px-5 md:px-7 py-2 md:py-3 bg-[#FF66C4] text-white rounded-full text-sm md:text-base font-bold shadow-md hover:bg-[#ff4d94] transition-all">Add</button>
           <button onClick={() => setIsCategoryEditMode(!isCategoryEditMode)} className={`px-4 md:px-6 py-2 md:py-3 border-[2px] md:border-[3px] border-black rounded-full text-sm md:text-base font-bold transition-all ${isCategoryEditMode ? 'bg-black text-white' : 'hover:bg-gray-100'}`}>Edit</button>
         </div>
@@ -91,8 +92,6 @@ function App() {
 
       {/* 2. 카테고리 & 검색 영역 */}
       <div className="max-w-[1920px] mx-auto px-4 sm:px-8 pb-6 md:pb-10 space-y-4 md:space-y-6">
-        
-        {/* 🔥 핵심 수정 구간: flex-wrap 추가, overflow-x-auto 삭제. 이제 화면 너비가 모자라면 버튼이 아래로 무조건 떨어집니다. */}
         <div className="flex flex-wrap gap-2 md:gap-2.5">
           {['All', ...categories].map((cat) => (
             <button key={cat} onClick={() => isCategoryEditMode ? handleEditCategory(cat) : setSelectedCategory(cat)}
