@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import Masonry from 'react-masonry-css';
-import { Search } from 'lucide-react'; 
+import { Search } from 'lucide-react';
 import VideoCard from './components/VideoCard';
 import AddVideoModal from './components/AddVideoModal';
 import { supabase } from './lib/supabaseClient'; 
@@ -11,7 +11,7 @@ interface Video {
   id: string; 
   title: string; 
   url: string; 
-  thumbnail_url: string; // DB 필드명
+  thumbnail_url: string; 
   category: string; 
   tags: string[]; 
   created_at: string;
@@ -23,16 +23,23 @@ function App() {
   const [videos, setVideos] = useState<Video[]>([]);
   const [filteredVideos, setFilteredVideos] = useState<Video[]>([]);
   const [categories, setCategories] = useState<string[]>(DEFAULT_CATEGORIES);
+  
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
   const [isCategoryEditMode, setIsCategoryEditMode] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [editing, setEditing] = useState<Video | null>(null);
   const [isEditOpen, setIsEditOpen] = useState(false);
 
   const fetchVideos = async () => {
-    const { data, error } = await supabase.from('videos').select('*').order('created_at', { ascending: false });
-    if (!error) setVideos(data || []);
+    try {
+      setLoading(true);
+      const { data, error } = await supabase.from('videos').select('*').order('created_at', { ascending: false });
+      if (error) throw error;
+      setVideos(data || []);
+    } catch (err) { console.error(err); } 
+    finally { setLoading(false); }
   };
 
   useEffect(() => {
@@ -51,73 +58,72 @@ function App() {
   const handleEditCategory = async (oldName: string) => {
     if (oldName === 'All') return;
     const newName = window.prompt(`'${oldName}'의 새 이름을 입력하세요:`, oldName);
-    if (newName?.trim() && newName !== oldName) {
+    if (newName && newName.trim() && newName !== oldName) {
       const trimmed = newName.trim();
       const updatedCats = categories.map(c => c === oldName ? trimmed : c);
       setCategories(updatedCats);
       localStorage.setItem('my_categories', JSON.stringify(updatedCats));
+
       await supabase.from('videos').update({ category: trimmed }).eq('category', oldName);
       fetchVideos();
+      if (selectedCategory === oldName) setSelectedCategory(trimmed);
     }
   };
 
   const breakpointColumns = { default: 5, 1536: 5, 1280: 4, 1024: 3, 768: 2, 640: 1 };
 
   return (
-    // overflow-x-hidden: 가로 스크롤 절대 방지 (가로 풀 고정)
-    <div className="min-h-screen w-full overflow-x-hidden bg-gradient-to-br from-[#fff0f5] via-white to-[#f0f8ff] text-black">
+    // overflow-x-hidden: 모바일에서 화면이 가로로 흔들리는 현상 완벽 차단
+    <div className="min-h-screen bg-gradient-to-br from-[#fff0f5] via-white via-40% to-[#f0f8ff] text-black overflow-x-hidden w-full">
       
-      {/* 1. 헤더: 모바일 텍스트 크기 조절 및 겹침 방지 */}
-      <div className="max-w-[1920px] mx-auto px-4 sm:px-8 pt-6 md:pt-10 pb-6">
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-          <div className="flex items-center gap-3 leading-none">
-            <img src={logoImg} alt="Logo" className="h-10 sm:h-12 md:h-16 w-auto object-contain" />
-            {/* text-3xl로 줄여서 모바일 짤림 방지 */}
-            <h1 className="text-3xl sm:text-5xl md:text-7xl font-black tracking-tighter uppercase leading-none">SCRAP ROE</h1>
-          </div>
-          <div className="flex gap-2 self-start md:self-auto">
-            <button onClick={() => setIsAddOpen(true)} className="px-5 md:px-7 py-2 md:py-3 bg-[#FF66C4] text-white rounded-full text-xs md:text-base font-bold shadow-md">Add</button>
-            <button onClick={() => setIsCategoryEditMode(!isCategoryEditMode)} className={`px-4 md:px-6 py-2 border-2 md:border-3 border-black rounded-full text-xs md:text-base font-bold transition-all ${isCategoryEditMode ? 'bg-black text-white' : 'bg-white'}`}>Edit</button>
-          </div>
+      {/* 1. 헤더 영역: 모바일에서 로고와 버튼이 겹치지 않게 세로(flex-col) 배치 적용 */}
+      <div className="max-w-[1920px] mx-auto px-4 sm:px-8 pt-6 md:pt-10 pb-6 flex flex-col md:flex-row items-start md:items-end justify-between gap-4 md:gap-6">
+        <div className="flex items-center md:items-end gap-3 md:gap-4 leading-none">
+          <img src={logoImg} alt="Logo" className="h-10 sm:h-12 md:h-16 w-auto object-contain" />
+          {/* 타이틀 크기 모바일 대응: text-4xl로 줄여서 밀어내기 방지 */}
+          <h1 className="text-4xl md:text-7xl font-black tracking-tighter">SCRAP ROE</h1>
+        </div>
+        <div className="flex gap-2 md:gap-3">
+          <button onClick={() => setIsAddOpen(true)} className="px-5 md:px-7 py-2 md:py-3 bg-[#FF66C4] text-white rounded-full text-sm md:text-base font-bold shadow-md hover:bg-[#ff4d94] transition-all">Add</button>
+          <button onClick={() => setIsCategoryEditMode(!isCategoryEditMode)} className={`px-4 md:px-6 py-2 md:py-3 border-[2px] md:border-[3px] border-black rounded-full text-sm md:text-base font-bold transition-all ${isCategoryEditMode ? 'bg-black text-white' : 'hover:bg-gray-100'}`}>Edit</button>
         </div>
       </div>
 
-      {/* 2. 카테고리 & 검색: flex-wrap으로 줄바꿈 강제 */}
+      {/* 2. 카테고리 & 검색 영역 */}
       <div className="max-w-[1920px] mx-auto px-4 sm:px-8 pb-6 md:pb-10 space-y-4 md:space-y-6">
-        {/* flex-wrap: 공간 모자라면 다음 줄로 이동 */}
+        
+        {/* 🔥 핵심 수정 구간: flex-wrap 추가, overflow-x-auto 삭제. 이제 화면 너비가 모자라면 버튼이 아래로 무조건 떨어집니다. */}
         <div className="flex flex-wrap gap-2 md:gap-2.5">
           {['All', ...categories].map((cat) => (
             <button key={cat} onClick={() => isCategoryEditMode ? handleEditCategory(cat) : setSelectedCategory(cat)}
-              className={`px-4 md:px-6 py-1.5 md:py-2 rounded-full text-[11px] md:text-sm font-bold border-2 transition-all ${
-                selectedCategory === cat ? 'bg-pink-100 text-pink-600 border-pink-200' : 'bg-white text-gray-700 border-gray-300'
+              className={`px-4 md:px-6 py-1.5 md:py-2.5 rounded-full text-sm font-bold transition-all border-2 ${
+                selectedCategory === cat ? 'bg-pink-100 text-pink-600 border-pink-200 shadow-inner' : 'bg-white text-gray-700 border-gray-300 hover:bg-pink-50'
               } ${isCategoryEditMode && cat !== 'All' ? 'border-dashed border-pink-400 animate-pulse' : ''}`}
             >
-              {cat}
+              {cat} {isCategoryEditMode && cat !== 'All' && <span className="text-[10px] opacity-60 ml-1">(Edit)</span>}
             </button>
           ))}
         </div>
         
-        {/* 검색바 */}
-        <div className="relative w-full">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-          <input type="text" placeholder="검색..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} 
-            className="w-full pl-10 pr-4 py-3 bg-white border-2 border-black rounded-full text-sm focus:outline-none" />
+        <div className="relative">
+          <Search className="absolute left-4 md:left-6 top-1/2 -translate-y-1/2 w-4 h-4 md:w-5 md:h-5 text-gray-400" />
+          <input type="text" placeholder="검색..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full pl-10 md:pl-14 pr-6 py-3 md:py-4 bg-white border-2 border-black rounded-full focus:outline-none text-sm md:text-base" />
         </div>
       </div>
 
-      {/* 3. 메이슨리 그리드 */}
-      <div className="max-w-[1920px] mx-auto px-4 sm:px-8 pb-20 w-full">
+      {/* 3. 그리드 영역 */}
+      <div className="max-w-[1920px] mx-auto px-4 sm:px-8 pb-20">
         <Masonry breakpointCols={breakpointColumns} className="masonry-grid" columnClassName="masonry-grid_column">
-          {filteredVideos.map((v) => (
-            <VideoCard key={v.id} id={v.id} title={v.title} thumbnailUrl={v.thumbnail_url} tags={v.tags} postUrl={v.url}
-              onEdit={(id) => { const video = videos.find(x => x.id === id); if(video) { setEditing(video); setIsEditOpen(true); } }}
+          {filteredVideos.map((video) => (
+            <VideoCard key={video.id} id={video.id} title={video.title} thumbnailUrl={video.thumbnail_url} tags={video.tags} postUrl={video.url}
+              onEdit={(id) => { const v = videos.find(x => x.id === id); if(v) { setEditing(v); setIsEditOpen(true); } }}
               onDelete={async (id) => { if(window.confirm('삭제하시겠습니까?')) { await supabase.from('videos').delete().eq('id', id); fetchVideos(); } }}
             />
           ))}
         </Masonry>
       </div>
 
-      {/* 모달 */}
+      {/* 4. 모달 영역 */}
       <AddVideoModal open={isAddOpen} onClose={() => setIsAddOpen(false)} categories={categories} 
         onSubmit={async (p) => { await supabase.from('videos').insert([{ title: p.title, url: p.url, thumbnail_url: p.thumbnailUrl, category: p.category, tags: p.tags }]); fetchVideos(); setIsAddOpen(false); }} 
       />
@@ -127,7 +133,6 @@ function App() {
         submitLabel="수정 완료"
         onSubmit={async (p) => {
           if (!editing) return;
-          // DB 필드명인 thumbnail_url로 정확히 매칭
           await supabase.from('videos').update({ title: p.title, url: p.url, thumbnail_url: p.thumbnailUrl, category: p.category, tags: p.tags }).eq('id', editing.id);
           fetchVideos(); setIsEditOpen(false); setEditing(null);
         }} 
