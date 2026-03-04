@@ -75,12 +75,13 @@ function App() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#fff0f5] via-white via-40% to-[#f0f8ff] text-black overflow-x-hidden w-full">
       
-      {/* 1. 헤더 영역 */}
+      {/* 1. 헤더 영역 (pt-3과 md:pt-7로 정확히 12px씩 위로 올림) */}
       <div className="max-w-[1920px] mx-auto px-4 sm:px-8 pt-3 md:pt-7 pb-6 flex flex-col md:flex-row items-start md:items-end justify-between gap-4 md:gap-6 w-full">
         <div className="flex items-center md:items-end gap-3 md:gap-4 leading-none">
           <img src={logoImg} alt="Logo" className="h-12 sm:h-14 md:h-16 w-auto object-contain" />
           <h1 className="text-5xl md:text-7xl font-black tracking-tighter">SCRAP ROE</h1>
         </div>
+        {/* 🔥 핵심 수정 구간: 모바일에서 상자를 꽉 채우고(w-full) 요소들을 오른쪽으로 밉니다(justify-end) */}
         <div className="w-full md:w-auto flex justify-end gap-2 md:gap-3">
           <button onClick={() => setIsAddOpen(true)} className="px-5 md:px-7 py-2 md:py-3 bg-[#FF66C4] text-white rounded-full text-sm md:text-base font-bold shadow-md hover:bg-[#ff4d94] transition-all">Add</button>
           <button onClick={() => setIsCategoryEditMode(!isCategoryEditMode)} className={`px-4 md:px-6 py-2 md:py-3 border-[2px] md:border-[3px] border-black rounded-full text-sm md:text-base font-bold transition-all ${isCategoryEditMode ? 'bg-black text-white' : 'hover:bg-gray-100'}`}>Edit</button>
@@ -88,11 +89,8 @@ function App() {
       </div>
 
       {/* 2. 카테고리 & 검색 영역 */}
-      {/* 🔥 범인이었던 space-y-4 삭제 완료! 이제 간격을 내 맘대로 조절 가능합니다. */}
-      <div className="max-w-[1920px] mx-auto px-4 sm:px-8 pb-6 md:pb-10">
-        
-        {/* 요청하신 대로 헤더에서 12px 떨어뜨림 */}
-        <div className="flex flex-wrap gap-2 md:gap-2.5 mt-[10px]">
+      <div className="max-w-[1920px] mx-auto px-4 sm:px-8 pb-6 md:pb-10 space-y-4 md:space-y-6">
+        <div className="flex flex-wrap gap-2 md:gap-2.5">
           {['All', ...categories].map((cat) => (
             <button key={cat} onClick={() => isCategoryEditMode ? handleEditCategory(cat) : setSelectedCategory(cat)}
               className={`px-4 md:px-6 py-1.5 md:py-2.5 rounded-full text-sm font-bold transition-all border-2 ${
@@ -104,8 +102,7 @@ function App() {
           ))}
         </div>
         
-        {/* 🔥 검색창을 버튼과 딱 달라붙게 mt-3 (12px) 설정! 더 붙이고 싶으면 mt-1(4px)로 바꾸면 됩니다. */}
-        <div className="relative mt-1">
+        <div className="relative">
           <Search className="absolute left-4 md:left-6 top-1/2 -translate-y-1/2 w-4 h-4 md:w-5 md:h-5 text-gray-400" />
           <input type="text" placeholder="검색..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full pl-10 md:pl-14 pr-6 py-3 md:py-4 bg-white border-2 border-black rounded-full focus:outline-none text-sm md:text-base" />
         </div>
