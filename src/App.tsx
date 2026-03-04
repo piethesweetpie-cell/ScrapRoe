@@ -90,7 +90,6 @@ function App() {
           <h1 className="text-7xl font-black tracking-tighter">SCRAP ROE</h1>
         </div>
         <div className="flex gap-3 mb-[-2px]">
-          <button onClick={handleMigrate} className="flex items-center gap-2 px-5 py-2.5 border-2 border-pink-400 text-pink-500 rounded-full font-bold hover:bg-pink-50 transition-all"><Database className="w-4 h-4" /> 데이터 이사</button>
           <button onClick={() => setIsAddOpen(true)} className="px-7 py-3 bg-[#FF66C4] text-white rounded-full font-bold shadow-md hover:bg-[#ff4d94] transition-all">Add</button>
           <button onClick={() => setIsCategoryEditMode(!isCategoryEditMode)} className={`px-6 py-3 border-[3px] border-black rounded-full font-bold transition-all ${isCategoryEditMode ? 'bg-black text-white' : 'hover:bg-gray-100'}`}>Edit</button>
         </div>
