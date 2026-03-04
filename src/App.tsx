@@ -88,9 +88,10 @@ function App() {
       </div>
 
       {/* 2. 카테고리 & 검색 영역 */}
-      <div className="max-w-[1920px] mx-auto px-4 sm:px-8 pb-6 md:pb-10 space-y-4 md:space-y-6">
+      {/* 🔥 범인이었던 space-y-4 삭제 완료! 이제 간격을 내 맘대로 조절 가능합니다. */}
+      <div className="max-w-[1920px] mx-auto px-4 sm:px-8 pb-6 md:pb-10">
         
-        {/* 🔥 요청하신 디테일 반영: mt-[5px] 추가로 버튼 묶음만 정확히 5px 아래로 내림 */}
+        {/* 요청하신 대로 헤더에서 20px 떨어뜨림 */}
         <div className="flex flex-wrap gap-2 md:gap-2.5 mt-[20px]">
           {['All', ...categories].map((cat) => (
             <button key={cat} onClick={() => isCategoryEditMode ? handleEditCategory(cat) : setSelectedCategory(cat)}
@@ -103,7 +104,8 @@ function App() {
           ))}
         </div>
         
-        <div className="relative">
+        {/* 🔥 검색창을 버튼과 딱 달라붙게 mt-3 (12px) 설정! 더 붙이고 싶으면 mt-1(4px)로 바꾸면 됩니다. */}
+        <div className="relative mt-3">
           <Search className="absolute left-4 md:left-6 top-1/2 -translate-y-1/2 w-4 h-4 md:w-5 md:h-5 text-gray-400" />
           <input type="text" placeholder="검색..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full pl-10 md:pl-14 pr-6 py-3 md:py-4 bg-white border-2 border-black rounded-full focus:outline-none text-sm md:text-base" />
         </div>
