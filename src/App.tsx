@@ -62,7 +62,6 @@ function App() {
   }, [videos, selectedCategory, searchQuery]);
 
   const handleEditCategory = async (oldName: string) => {
-    if (oldName === 'All') return;
     const newName = window.prompt(`'${oldName}'의 새 이름을 입력하세요:`, oldName);
     if (newName && newName.trim() && newName !== oldName) {
       const trimmed = newName.trim();
@@ -76,6 +75,16 @@ function App() {
     }
   };
 
+  const handleDeleteCategory = (e: React.MouseEvent, catToDelete: string) => {
+    e.stopPropagation(); 
+    if (window.confirm(`'${catToDelete}' 카테고리를 삭제하시겠습니까?`)) {
+      const updatedCats = categories.filter(c => c !== catToDelete);
+      setCategories(updatedCats);
+      localStorage.setItem('my_categories', JSON.stringify(updatedCats));
+      if (selectedCategory === catToDelete) setSelectedCategory('All');
+    }
+  };
+
   const breakpointColumnsLarge = { default: 5, 1536: 5, 1280: 4, 1024: 3, 768: 2, 640: 1 };
   const breakpointColumnsSmall = { default: 10, 1536: 10, 1280: 8, 1024: 6, 768: 4, 640: 2 };
   const currentBreakpoints = viewMode === 'large' ? breakpointColumnsLarge : breakpointColumnsSmall;
@@ -85,61 +94,61 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#fff0f5] via-white via-40% to-[#f0f8ff] text-black overflow-x-hidden w-full">
-      <div className="max-w-[1920px] mx-auto px-4 sm:px-8 pt-3 md:pt-7 pb-6 flex flex-col md:flex-row items-start md:items-end justify-between gap-4 md:gap-6 w-full">
-        <div className="flex items-center md:items-end gap-3 md:gap-4 leading-none">
+      
+      {/* 1. 헤더 영역 (로고 + 뷰어 토글 + Add + Edit) */}
+      <div className="max-w-[1920px] mx-auto px-4 sm:px-8 pt-3 md:pt-7 pb-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 md:gap-6 w-full">
+        <div className="flex items-center gap-3 md:gap-4 leading-none">
           <img src={logoImg} alt="Logo" className="h-12 sm:h-14 md:h-16 w-auto object-contain" />
           <h1 className="text-5xl md:text-7xl font-black tracking-tighter">SCRAP ROE</h1>
         </div>
-        <div className="w-full md:w-auto flex justify-end gap-2 md:gap-3">
+        
+        <div className="w-full md:w-auto flex flex-wrap items-center justify-end gap-2 md:gap-3">
+          {/* 🔥 갯수 조정(뷰어 토글) 버튼을 Add 왼쪽으로 이동 완료! */}
+          <div className="flex bg-white/50 border-2 border-black rounded-full p-1 gap-1 mr-1">
+            <button onClick={() => { setViewMode('large'); setCurrentPage(1); }} className={`px-3 py-1.5 rounded-full text-sm font-bold transition-all ${viewMode === 'large' ? 'bg-[#FF66C4] text-white shadow-sm' : 'text-gray-600 hover:text-black hover:bg-white/80'}`} title="크게 보기">
+              ■ 크게
+            </button>
+            <button onClick={() => { setViewMode('small'); setCurrentPage(1); }} className={`px-3 py-1.5 rounded-full text-sm font-bold transition-all ${viewMode === 'small' ? 'bg-[#FF66C4] text-white shadow-sm' : 'text-gray-600 hover:text-black hover:bg-white/80'}`} title="작게 보기 (50%)">
+              ▦ 작게
+            </button>
+          </div>
+
           <button onClick={() => setIsAddOpen(true)} className="px-5 md:px-7 py-2 md:py-3 bg-[#FF66C4] text-white rounded-full text-sm md:text-base font-bold shadow-md hover:bg-[#ff4d94] transition-all">Add</button>
           <button onClick={() => setIsCategoryEditMode(!isCategoryEditMode)} className={`px-4 md:px-6 py-2 md:py-3 border-[2px] md:border-[3px] border-black rounded-full text-sm md:text-base font-bold transition-all ${isCategoryEditMode ? 'bg-black text-white' : 'hover:bg-gray-100'}`}>Edit</button>
         </div>
       </div>
 
       <div className="max-w-[1920px] mx-auto px-4 sm:px-8 pb-4 md:pb-6">
-        <div className="flex flex-wrap gap-2 md:gap-2.5 mt-[19px]">
-          {['All', ...categories].map((cat) => (
-            <button key={cat} onClick={() => isCategoryEditMode ? handleEditCategory(cat) : setSelectedCategory(cat)}
-              className={`px-4 md:px-6 py-1.5 md:py-2.5 rounded-full text-sm font-bold transition-all border-2 ${
-                selectedCategory === cat ? 'bg-pink-100 text-pink-600 border-pink-200 shadow-inner' : 'bg-white text-gray-700 border-gray-300 hover:bg-pink-50'
-              } ${isCategoryEditMode && cat !== 'All' ? 'border-dashed border-pink-400 animate-pulse' : ''}`}
-            >
-              {cat} {isCategoryEditMode && cat !== 'All' && <span className="text-[10px] opacity-60 ml-1">(Edit)</span>}
-            </button>
-          ))}
-        </div>
-        
-        <div className="relative mt-[5px]">
+        {/* 🔥 검색창을 카테고리 위로 끌어올림! */}
+        <div className="relative mb-4">
           <Search className="absolute left-4 md:left-6 top-1/2 -translate-y-1/2 w-4 h-4 md:w-5 md:h-5 text-gray-400" />
           <input type="text" placeholder="검색..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full pl-10 md:pl-14 pr-6 py-3 md:py-4 bg-white border-2 border-black rounded-full focus:outline-none text-sm md:text-base" />
         </div>
 
-        <div className="flex justify-end mt-3">
-          <div className="flex bg-gray-100 border border-gray-200 p-1 rounded-lg">
-            <button onClick={() => { setViewMode('large'); setCurrentPage(1); }} className={`p-2 rounded-md transition-all ${viewMode === 'large' ? 'bg-white shadow-sm text-black' : 'text-gray-400 hover:text-black'}`} title="크게 보기">
-              {/* 🔥 큰 격자 (2x2) 직접 그리기 */}
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="3" y="3" width="7" height="7" />
-                <rect x="14" y="3" width="7" height="7" />
-                <rect x="14" y="14" width="7" height="7" />
-                <rect x="3" y="14" width="7" height="7" />
-              </svg>
+        {/* 🔥 카테고리 버튼을 검색창 아래로 내림! */}
+        <div className="flex flex-wrap gap-2 md:gap-2.5">
+          {['All', ...categories].map((cat) => (
+            <button 
+              key={cat} 
+              onClick={() => (isCategoryEditMode && cat !== 'All') ? handleEditCategory(cat) : setSelectedCategory(cat)}
+              className={`relative px-4 md:px-6 py-1.5 md:py-2.5 rounded-full text-sm font-bold transition-all border-2 ${
+                selectedCategory === cat ? 'bg-pink-100 text-pink-600 border-pink-200 shadow-inner' : 'bg-white text-gray-700 border-gray-300 hover:bg-pink-50'
+              } ${isCategoryEditMode && cat !== 'All' ? 'border-dashed border-pink-400 animate-pulse pr-8' : ''}`}
+            >
+              {cat} {isCategoryEditMode && cat !== 'All' && <span className="text-[10px] opacity-60 ml-1">(Edit)</span>}
+              
+              {/* 🔥 삭제용 'x' 버튼 완벽 복구! */}
+              {isCategoryEditMode && cat !== 'All' && (
+                <span 
+                  onClick={(e) => handleDeleteCategory(e, cat)}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 flex items-center justify-center bg-red-100 text-red-500 rounded-full hover:bg-red-500 hover:text-white transition-colors text-xs leading-none"
+                  title="삭제"
+                >
+                  ✕
+                </span>
+              )}
             </button>
-            <button onClick={() => { setViewMode('small'); setCurrentPage(1); }} className={`p-2 rounded-md transition-all ${viewMode === 'small' ? 'bg-white shadow-sm text-black' : 'text-gray-400 hover:text-black'}`} title="작게 보기 (50%)">
-              {/* 🔥 작은 격자 (3x3) 직접 그리기 */}
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="3" y="3" width="4" height="4" />
-                <rect x="10" y="3" width="4" height="4" />
-                <rect x="17" y="3" width="4" height="4" />
-                <rect x="3" y="10" width="4" height="4" />
-                <rect x="10" y="10" width="4" height="4" />
-                <rect x="17" y="10" width="4" height="4" />
-                <rect x="3" y="17" width="4" height="4" />
-                <rect x="10" y="17" width="4" height="4" />
-                <rect x="17" y="17" width="4" height="4" />
-              </svg>
-            </button>
-          </div>
+          ))}
         </div>
       </div>
 
