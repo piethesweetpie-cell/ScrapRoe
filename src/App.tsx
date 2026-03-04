@@ -95,37 +95,44 @@ function App() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#fff0f5] via-white via-40% to-[#f0f8ff] text-black overflow-x-hidden w-full">
       
-      {/* 1. 헤더 영역 (로고 + 뷰어 토글 + Add + Edit) */}
+      {/* 1. 헤더 영역 */}
       <div className="max-w-[1920px] mx-auto px-4 sm:px-8 pt-3 md:pt-7 pb-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 md:gap-6 w-full">
         <div className="flex items-center gap-3 md:gap-4 leading-none">
           <img src={logoImg} alt="Logo" className="h-12 sm:h-14 md:h-16 w-auto object-contain" />
           <h1 className="text-5xl md:text-7xl font-black tracking-tighter">SCRAP ROE</h1>
         </div>
         
+        {/* 🔥 여기서 뷰어 토글 버튼을 뺐습니다! */}
         <div className="w-full md:w-auto flex flex-wrap items-center justify-end gap-2 md:gap-3">
-          {/* 🔥 갯수 조정(뷰어 토글) 버튼을 Add 왼쪽으로 이동 완료! */}
-          <div className="flex bg-white/50 border-2 border-black rounded-full p-1 gap-1 mr-1">
-            <button onClick={() => { setViewMode('large'); setCurrentPage(1); }} className={`px-3 py-1.5 rounded-full text-sm font-bold transition-all ${viewMode === 'large' ? 'bg-[#FF66C4] text-white shadow-sm' : 'text-gray-600 hover:text-black hover:bg-white/80'}`} title="크게 보기">
-              ■ 크게
-            </button>
-            <button onClick={() => { setViewMode('small'); setCurrentPage(1); }} className={`px-3 py-1.5 rounded-full text-sm font-bold transition-all ${viewMode === 'small' ? 'bg-[#FF66C4] text-white shadow-sm' : 'text-gray-600 hover:text-black hover:bg-white/80'}`} title="작게 보기 (50%)">
-              ▦ 작게
-            </button>
-          </div>
-
           <button onClick={() => setIsAddOpen(true)} className="px-5 md:px-7 py-2 md:py-3 bg-[#FF66C4] text-white rounded-full text-sm md:text-base font-bold shadow-md hover:bg-[#ff4d94] transition-all">Add</button>
           <button onClick={() => setIsCategoryEditMode(!isCategoryEditMode)} className={`px-4 md:px-6 py-2 md:py-3 border-[2px] md:border-[3px] border-black rounded-full text-sm md:text-base font-bold transition-all ${isCategoryEditMode ? 'bg-black text-white' : 'hover:bg-gray-100'}`}>Edit</button>
         </div>
       </div>
 
       <div className="max-w-[1920px] mx-auto px-4 sm:px-8 pb-4 md:pb-6">
-        {/* 🔥 검색창을 카테고리 위로 끌어올림! */}
-        <div className="relative mb-4">
-          <Search className="absolute left-4 md:left-6 top-1/2 -translate-y-1/2 w-4 h-4 md:w-5 md:h-5 text-gray-400" />
-          <input type="text" placeholder="검색..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full pl-10 md:pl-14 pr-6 py-3 md:py-4 bg-white border-2 border-black rounded-full focus:outline-none text-sm md:text-base" />
+        
+        {/* 🔥 검색창 & 뷰어 토글 버튼 합체! */}
+        <div className="flex flex-col sm:flex-row items-center gap-3 mb-4">
+          
+          {/* 1. 검색창 (flex-1로 남는 가로 공간을 다 먹게 설정) */}
+          <div className="relative flex-1 w-full">
+            <Search className="absolute left-4 md:left-6 top-1/2 -translate-y-1/2 w-4 h-4 md:w-5 md:h-5 text-gray-400" />
+            <input type="text" placeholder="검색..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full pl-10 md:pl-14 pr-6 py-3 md:py-4 bg-white border-2 border-black rounded-full focus:outline-none text-sm md:text-base" />
+          </div>
+
+          {/* 2. 뷰어 토글 버튼 (우측에 딱 붙어있게 shrink-0 설정) */}
+          <div className="flex bg-white/50 border-2 border-black rounded-full p-1 gap-1 shrink-0 w-full sm:w-auto justify-center">
+            <button onClick={() => { setViewMode('large'); setCurrentPage(1); }} className={`px-4 py-2 md:py-2.5 rounded-full text-sm font-bold transition-all ${viewMode === 'large' ? 'bg-[#FF66C4] text-white shadow-sm' : 'text-gray-600 hover:text-black hover:bg-white/80'}`} title="크게 보기">
+              ■ 크게
+            </button>
+            <button onClick={() => { setViewMode('small'); setCurrentPage(1); }} className={`px-4 py-2 md:py-2.5 rounded-full text-sm font-bold transition-all ${viewMode === 'small' ? 'bg-[#FF66C4] text-white shadow-sm' : 'text-gray-600 hover:text-black hover:bg-white/80'}`} title="작게 보기 (50%)">
+              ▦ 작게
+            </button>
+          </div>
+
         </div>
 
-        {/* 🔥 카테고리 버튼을 검색창 아래로 내림! */}
+        {/* 3. 카테고리 버튼들 (가장 아래로 유지) */}
         <div className="flex flex-wrap gap-2 md:gap-2.5">
           {['All', ...categories].map((cat) => (
             <button 
@@ -137,7 +144,6 @@ function App() {
             >
               {cat} {isCategoryEditMode && cat !== 'All' && <span className="text-[10px] opacity-60 ml-1">(Edit)</span>}
               
-              {/* 🔥 삭제용 'x' 버튼 완벽 복구! */}
               {isCategoryEditMode && cat !== 'All' && (
                 <span 
                   onClick={(e) => handleDeleteCategory(e, cat)}
