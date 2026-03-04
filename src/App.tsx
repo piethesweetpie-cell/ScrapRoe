@@ -105,7 +105,8 @@ function App() {
 
       {/* 2. 카테고리 & 검색 영역 */}
       <div className="max-w-[1920px] mx-auto px-4 sm:px-8 pb-4 md:pb-6">
-        <div className="flex flex-wrap gap-2 md:gap-2.5 mt-[20px]">
+        {/* mt-[4px]에서 -mt-[1px]로 변경하여 상단으로 1px 이동 */}
+<div className="flex flex-wrap gap-2 md:gap-2.5 -mt-[1px]">
           {['All', ...categories].map((cat) => (
             <button key={cat} onClick={() => isCategoryEditMode ? handleEditCategory(cat) : setSelectedCategory(cat)}
               className={`px-4 md:px-6 py-1.5 md:py-2.5 rounded-full text-sm font-bold transition-all border-2 ${
