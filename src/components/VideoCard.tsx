@@ -1,5 +1,5 @@
 import React from 'react';
-import { Pencil, Trash2 } from 'lucide-react'; // 🔥 안 쓰는 ExternalLink(외부 링크) 아이콘 삭제
+import { Pencil, Trash2 } from 'lucide-react';
 
 interface VideoCardProps {
   id: string;
@@ -10,6 +10,7 @@ interface VideoCardProps {
   viewMode?: 'large' | 'small'; 
   onEdit: (id: string) => void;
   onDelete: (id: string) => void;
+  onTagClick?: (tag: string) => void; // 🔥 태그 클릭 기능 추가
 }
 
 const VideoCard: React.FC<VideoCardProps> = ({ 
@@ -20,12 +21,12 @@ const VideoCard: React.FC<VideoCardProps> = ({
   postUrl, 
   viewMode = 'large', 
   onEdit, 
-  onDelete 
+  onDelete,
+  onTagClick // 🔥 프롭스로 받아오기
 }) => {
   return (
     <div className="group relative bg-white border-2 border-black rounded-3xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 masonry-item mb-4 md:mb-5">
       
-      {/* 🔥 썸네일 영역 전체를 <a> 태그로 감싸서 클릭하면 무조건 바로 넘어가게 수정했습니다 */}
       <a 
         href={postUrl} 
         target="_blank" 
@@ -46,17 +47,25 @@ const VideoCard: React.FC<VideoCardProps> = ({
             </h3>
             
             <div className="flex flex-wrap gap-1.5 mt-1">
-              {tags.map(tag => (
-                <span key={tag} className="px-2.5 py-0.5 bg-white/20 text-white rounded-full text-xs font-medium backdrop-blur-sm">
+              {tags && tags.map(tag => (
+                // 🔥 span을 button으로 바꾸고, 클릭 기능을 넣었습니다!
+                <button 
+                  key={tag} 
+                  onClick={(e) => {
+                    e.preventDefault(); // 🔥 태그 눌렀을 때 새 창(원본 링크) 열리는 거 방지
+                    e.stopPropagation(); 
+                    if (onTagClick) onTagClick(tag); // 🔥 누른 태그 이름 전달
+                  }}
+                  className="px-2.5 py-0.5 bg-white/20 hover:bg-[#FF66C4] text-white rounded-full text-xs font-medium backdrop-blur-sm transition-colors cursor-pointer"
+                >
                   #{tag}
-                </span>
+                </button>
               ))}
             </div>
           </div>
         )}
       </a>
 
-      {/* 🔥 삭제/수정 버튼만 남기고 링크 아이콘은 싹 없앴습니다 */}
       <div className="absolute top-3 right-3 flex gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
         <button onClick={() => onEdit(id)} className="p-2 bg-white/90 text-gray-700 rounded-full hover:bg-white hover:text-black shadow-md backdrop-blur-sm transition-all" title="수정">
           <Pencil className="w-4 h-4" />
