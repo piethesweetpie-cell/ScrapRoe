@@ -92,7 +92,7 @@ function App() {
       <div className="max-w-[1920px] mx-auto px-4 sm:px-8 pb-6 md:pb-10">
         
         {/* 요청하신 대로 헤더에서 12px 떨어뜨림 */}
-        <div className="flex flex-wrap gap-2 md:gap-2.5 mt-[12px]">
+        <div className="flex flex-wrap gap-2 md:gap-2.5 mt-[8px]">
           {['All', ...categories].map((cat) => (
             <button key={cat} onClick={() => isCategoryEditMode ? handleEditCategory(cat) : setSelectedCategory(cat)}
               className={`px-4 md:px-6 py-1.5 md:py-2.5 rounded-full text-sm font-bold transition-all border-2 ${
