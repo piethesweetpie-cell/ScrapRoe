@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import Masonry from 'react-masonry-css';
-import { Search } from 'lucide-react'; 
+// 🔥 검색어 지우기용 'X' 아이콘을 추가로 불러왔습니다.
+import { Search, X } from 'lucide-react'; 
 import VideoCard from './components/VideoCard';
 import AddVideoModal from './components/AddVideoModal';
 import { supabase } from './lib/supabaseClient'; 
@@ -55,8 +56,25 @@ function App() {
 
   useEffect(() => {
     let filtered = Array.isArray(videos) ? videos : [];
-    if (selectedCategory !== 'All') filtered = filtered.filter(v => v.category === selectedCategory);
-    if (searchQuery) filtered = filtered.filter(v => v.title.toLowerCase().includes(searchQuery.toLowerCase()));
+    
+    if (selectedCategory !== 'All') {
+      filtered = filtered.filter(v => v.category === selectedCategory);
+    }
+    
+    // 🔥 방탄 검색 기능: 제목과 태그를 무조건 텍스트로 변환해서 이잡듯이 다 뒤집니다!
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      filtered = filtered.filter(v => {
+        const titleMatch = v.title ? v.title.toLowerCase().includes(query) : false;
+        
+        // 태그가 배열이든 문자열이든 강제로 하나의 긴 문장으로 만들어서 검색합니다.
+        const tagsText = Array.isArray(v.tags) ? v.tags.join(' ').toLowerCase() : String(v.tags || '').toLowerCase();
+        const tagMatch = tagsText.includes(query);
+        
+        return titleMatch || tagMatch;
+      });
+    }
+    
     setFilteredVideos(filtered);
     setCurrentPage(1); 
   }, [videos, selectedCategory, searchQuery]);
@@ -96,7 +114,12 @@ function App() {
     <div className="min-h-screen bg-gradient-to-br from-[#fff0f5] via-white via-40% to-[#f0f8ff] text-black overflow-x-hidden w-full">
       
       <div className="max-w-[1920px] mx-auto px-4 sm:px-8 pt-3 md:pt-7 pb-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 md:gap-6 w-full">
-        <div className="flex items-center gap-3 md:gap-4 leading-none">
+        {/* 🔥 로고를 누르면 All 카테고리로 초기화되고 검색어도 날아가도록 설정! */}
+        <div 
+          onClick={() => { setSelectedCategory('All'); setSearchQuery(''); setCurrentPage(1); }}
+          className="flex items-center gap-3 md:gap-4 leading-none cursor-pointer hover:opacity-80 transition-opacity"
+          title="처음으로 (초기화)"
+        >
           <img src={logoImg} alt="Logo" className="h-12 sm:h-14 md:h-16 w-auto object-contain" />
           <h1 className="text-5xl md:text-7xl font-black tracking-tighter">SCRAP ROE</h1>
         </div>
@@ -110,13 +133,30 @@ function App() {
       <div className="max-w-[1920px] mx-auto px-4 sm:px-8 pb-4 md:pb-6">
         
         <div className="flex flex-col sm:flex-row items-center gap-3 mb-4">
-          {/* 🔥 1. 검색창 (강제 높이 지정: h-12 md:h-14) */}
-          <div className="relative flex-1 w-full h-12 md:h-14">
+          <div className="relative flex-1 w-full h-12 md:h-14 group">
             <Search className="absolute left-4 md:left-6 top-1/2 -translate-y-1/2 w-4 h-4 md:w-5 md:h-5 text-gray-400" />
-            <input type="text" placeholder="검색..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full h-full pl-10 md:pl-14 pr-6 bg-white border-2 border-black rounded-full focus:outline-none text-sm md:text-base" />
+            
+            {/* 🔥 우측 여백(pr-10 md:pr-14)을 줘서 글씨가 X 버튼을 뚫고 지나가지 않게 막았습니다 */}
+            <input 
+              type="text" 
+              placeholder="검색..." 
+              value={searchQuery} 
+              onChange={(e) => setSearchQuery(e.target.value)} 
+              className="w-full h-full pl-10 md:pl-14 pr-10 md:pr-14 bg-white border-2 border-black rounded-full focus:outline-none text-sm md:text-base" 
+            />
+            
+            {/* 🔥 글씨를 한 글자라도 쓰면 나타나는 우측 X 버튼! */}
+            {searchQuery && (
+              <button 
+                onClick={() => setSearchQuery('')} 
+                className="absolute right-3 md:right-5 top-1/2 -translate-y-1/2 w-6 h-6 flex items-center justify-center text-gray-400 hover:text-black hover:bg-gray-100 rounded-full transition-all"
+                title="검색어 지우기"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            )}
           </div>
 
-          {/* 🔥 2. 뷰어 토글 버튼 (검색창과 완벽히 동일한 높이 지정 & overflow-hidden으로 모서리 깨짐 방지) */}
           <div className="flex items-center bg-white/50 border-2 border-black rounded-full p-1 shrink-0 w-full sm:w-auto h-12 md:h-14 overflow-hidden">
             <button onClick={() => { setViewMode('large'); setCurrentPage(1); }} className={`h-full flex items-center justify-center px-4 rounded-full text-sm font-bold transition-all ${viewMode === 'large' ? 'bg-[#FF66C4] text-white shadow-sm' : 'text-gray-600 hover:text-black hover:bg-white/80'}`} title="크게 보기">
               ■ 크게
@@ -165,6 +205,7 @@ function App() {
               viewMode={viewMode}
               onEdit={(id) => { const v = videos.find(x => x.id === id); if(v) { setEditing(v); setIsEditOpen(true); } }}
               onDelete={async (id) => { if(window.confirm('삭제하시겠습니까?')) { await supabase.from('videos').delete().eq('id', id); fetchVideos(); } }}
+              onTagClick={(tag) => setSearchQuery(tag)} 
             />
           ))}
         </Masonry>
