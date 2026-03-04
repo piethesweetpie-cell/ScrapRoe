@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import Masonry from 'react-masonry-css';
-// 🔥 LayoutGrid(큰 네모), Grid(작은 네모) 아이콘 추가
-import { Search, LayoutGrid, Grid } from 'lucide-react'; 
+import { Search } from 'lucide-react'; 
 import VideoCard from './components/VideoCard';
 import AddVideoModal from './components/AddVideoModal';
 import { supabase } from './lib/supabaseClient'; 
@@ -34,10 +33,8 @@ function App() {
   const [isEditOpen, setIsEditOpen] = useState(false);
 
   const [currentPage, setCurrentPage] = useState(1);
-  // 🔥 뷰 모드 State 추가 ('large' = 기본, 'small' = 50% 축소)
   const [viewMode, setViewMode] = useState<'large' | 'small'>('large'); 
 
-  // 🔥 뷰 모드에 따라 페이지당 출력 개수를 다르게 설정 (큰 건 40개, 작은 건 80개)
   const ITEMS_PER_PAGE = viewMode === 'large' ? 40 : 80;
 
   const fetchVideos = async () => {
@@ -79,8 +76,6 @@ function App() {
     }
   };
 
-  // 🔥 뷰 모드에 따른 컬럼(가로 줄) 개수 세팅 
-  // 기본(large)은 5칸, 작게(small)는 정확히 두 배인 10칸으로 쪼개서 크기를 50%로 만듦
   const breakpointColumnsLarge = { default: 5, 1536: 5, 1280: 4, 1024: 3, 768: 2, 640: 1 };
   const breakpointColumnsSmall = { default: 10, 1536: 10, 1280: 8, 1024: 6, 768: 4, 640: 2 };
   const currentBreakpoints = viewMode === 'large' ? breakpointColumnsLarge : breakpointColumnsSmall;
@@ -90,8 +85,6 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#fff0f5] via-white via-40% to-[#f0f8ff] text-black overflow-x-hidden w-full">
-      
-      {/* 1. 헤더 영역 */}
       <div className="max-w-[1920px] mx-auto px-4 sm:px-8 pt-3 md:pt-7 pb-6 flex flex-col md:flex-row items-start md:items-end justify-between gap-4 md:gap-6 w-full">
         <div className="flex items-center md:items-end gap-3 md:gap-4 leading-none">
           <img src={logoImg} alt="Logo" className="h-12 sm:h-14 md:h-16 w-auto object-contain" />
@@ -103,10 +96,8 @@ function App() {
         </div>
       </div>
 
-      {/* 2. 카테고리 & 검색 영역 */}
       <div className="max-w-[1920px] mx-auto px-4 sm:px-8 pb-4 md:pb-6">
-        {/* mt-[4px]에서 -mt-[1px]로 변경하여 상단으로 1px 이동 */}
-<div className="flex flex-wrap gap-2 md:gap-2.5 -mt-[1px]">
+        <div className="flex flex-wrap gap-2 md:gap-2.5 mt-[19px]">
           {['All', ...categories].map((cat) => (
             <button key={cat} onClick={() => isCategoryEditMode ? handleEditCategory(cat) : setSelectedCategory(cat)}
               className={`px-4 md:px-6 py-1.5 md:py-2.5 rounded-full text-sm font-bold transition-all border-2 ${
@@ -118,37 +109,51 @@ function App() {
           ))}
         </div>
         
-        <div className="relative mt-[4px]">
+        <div className="relative mt-[5px]">
           <Search className="absolute left-4 md:left-6 top-1/2 -translate-y-1/2 w-4 h-4 md:w-5 md:h-5 text-gray-400" />
           <input type="text" placeholder="검색..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full pl-10 md:pl-14 pr-6 py-3 md:py-4 bg-white border-2 border-black rounded-full focus:outline-none text-sm md:text-base" />
         </div>
 
-        {/* 🔥 요청하신 뷰어 토글 버튼 (검색창 바로 아래 우측) */}
         <div className="flex justify-end mt-3">
           <div className="flex bg-gray-100 border border-gray-200 p-1 rounded-lg">
-            <button
-              onClick={() => { setViewMode('large'); setCurrentPage(1); }}
-              className={`p-2 rounded-md transition-all ${viewMode === 'large' ? 'bg-white shadow-sm text-black' : 'text-gray-400 hover:text-black'}`}
-              title="크게 보기"
-            >
-              <LayoutGrid className="w-5 h-5" />
+            <button onClick={() => { setViewMode('large'); setCurrentPage(1); }} className={`p-2 rounded-md transition-all ${viewMode === 'large' ? 'bg-white shadow-sm text-black' : 'text-gray-400 hover:text-black'}`} title="크게 보기">
+              {/* 🔥 큰 격자 (2x2) 직접 그리기 */}
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="3" width="7" height="7" />
+                <rect x="14" y="3" width="7" height="7" />
+                <rect x="14" y="14" width="7" height="7" />
+                <rect x="3" y="14" width="7" height="7" />
+              </svg>
             </button>
-            <button
-              onClick={() => { setViewMode('small'); setCurrentPage(1); }}
-              className={`p-2 rounded-md transition-all ${viewMode === 'small' ? 'bg-white shadow-sm text-black' : 'text-gray-400 hover:text-black'}`}
-              title="작게 보기 (50%)"
-            >
-              <Grid className="w-5 h-5" />
+            <button onClick={() => { setViewMode('small'); setCurrentPage(1); }} className={`p-2 rounded-md transition-all ${viewMode === 'small' ? 'bg-white shadow-sm text-black' : 'text-gray-400 hover:text-black'}`} title="작게 보기 (50%)">
+              {/* 🔥 작은 격자 (3x3) 직접 그리기 */}
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="3" width="4" height="4" />
+                <rect x="10" y="3" width="4" height="4" />
+                <rect x="17" y="3" width="4" height="4" />
+                <rect x="3" y="10" width="4" height="4" />
+                <rect x="10" y="10" width="4" height="4" />
+                <rect x="17" y="10" width="4" height="4" />
+                <rect x="3" y="17" width="4" height="4" />
+                <rect x="10" y="17" width="4" height="4" />
+                <rect x="17" y="17" width="4" height="4" />
+              </svg>
             </button>
           </div>
         </div>
       </div>
 
-      {/* 3. 그리드 영역 */}
       <div className="max-w-[1920px] mx-auto px-4 sm:px-8 pb-10">
         <Masonry breakpointCols={currentBreakpoints} className="masonry-grid" columnClassName="masonry-grid_column">
           {currentVideos.map((video) => (
-            <VideoCard key={video.id} id={video.id} title={video.title} thumbnailUrl={video.thumbnail_url} tags={video.tags} postUrl={video.url}
+            <VideoCard 
+              key={video.id} 
+              id={video.id} 
+              title={video.title} 
+              thumbnailUrl={video.thumbnail_url} 
+              tags={video.tags} 
+              postUrl={video.url}
+              viewMode={viewMode}
               onEdit={(id) => { const v = videos.find(x => x.id === id); if(v) { setEditing(v); setIsEditOpen(true); } }}
               onDelete={async (id) => { if(window.confirm('삭제하시겠습니까?')) { await supabase.from('videos').delete().eq('id', id); fetchVideos(); } }}
             />
@@ -157,53 +162,23 @@ function App() {
 
         {totalPages > 1 && (
           <div className="flex justify-center items-center gap-2 mt-12 pb-10">
-            <button
-              onClick={() => { setCurrentPage(p => Math.max(1, p - 1)); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-              disabled={currentPage === 1}
-              className="px-4 py-2 border-2 border-black rounded-full text-sm font-bold disabled:opacity-20 hover:bg-gray-100 transition-all"
-            >
+            <button onClick={() => { setCurrentPage(p => Math.max(1, p - 1)); window.scrollTo({ top: 0, behavior: 'smooth' }); }} disabled={currentPage === 1} className="px-4 py-2 border-2 border-black rounded-full text-sm font-bold disabled:opacity-20 hover:bg-gray-100 transition-all">
               &lt;&lt;
             </button>
-            
             {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
-              <button
-                key={pageNum}
-                onClick={() => { setCurrentPage(pageNum); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-                className={`w-10 h-10 flex justify-center items-center border-2 rounded-full text-sm font-bold transition-all ${
-                  currentPage === pageNum 
-                    ? 'bg-[#FF66C4] border-[#FF66C4] text-white shadow-md' 
-                    : 'bg-white border-black text-black hover:bg-pink-50'
-                }`}
-              >
+              <button key={pageNum} onClick={() => { setCurrentPage(pageNum); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className={`w-10 h-10 flex justify-center items-center border-2 rounded-full text-sm font-bold transition-all ${currentPage === pageNum ? 'bg-[#FF66C4] border-[#FF66C4] text-white shadow-md' : 'bg-white border-black text-black hover:bg-pink-50'}`}>
                 {pageNum}
               </button>
             ))}
-
-            <button
-              onClick={() => { setCurrentPage(p => Math.min(totalPages, p + 1)); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-              disabled={currentPage === totalPages}
-              className="px-4 py-2 border-2 border-black rounded-full text-sm font-bold disabled:opacity-20 hover:bg-gray-100 transition-all"
-            >
+            <button onClick={() => { setCurrentPage(p => Math.min(totalPages, p + 1)); window.scrollTo({ top: 0, behavior: 'smooth' }); }} disabled={currentPage === totalPages} className="px-4 py-2 border-2 border-black rounded-full text-sm font-bold disabled:opacity-20 hover:bg-gray-100 transition-all">
               &gt;&gt;
             </button>
           </div>
         )}
       </div>
 
-      {/* 4. 모달 영역 */}
-      <AddVideoModal open={isAddOpen} onClose={() => setIsAddOpen(false)} categories={categories} 
-        onSubmit={async (p) => { await supabase.from('videos').insert([{ title: p.title, url: p.url, thumbnail_url: p.thumbnailUrl, category: p.category, tags: p.tags }]); fetchVideos(); setIsAddOpen(false); }} 
-      />
-
-      <AddVideoModal open={isEditOpen} onClose={() => { setIsEditOpen(false); setEditing(null); }} categories={categories}
-        initial={editing ? { title: editing.title, url: editing.url, thumbnailUrl: editing.thumbnail_url, category: editing.category, tags: editing.tags } : null}
-        submitLabel="수정 완료"
-        onSubmit={async (p) => {
-          if (!editing) return;
-          await supabase.from('videos').update({ title: p.title, url: p.url, thumbnail_url: p.thumbnailUrl, category: p.category, tags: p.tags }).eq('id', editing.id);
-          fetchVideos(); setIsEditOpen(false); setEditing(null);
-        }} 
-      />
+      <AddVideoModal open={isAddOpen} onClose={() => setIsAddOpen(false)} categories={categories} onSubmit={async (p) => { await supabase.from('videos').insert([{ title: p.title, url: p.url, thumbnail_url: p.thumbnailUrl, category: p.category, tags: p.tags }]); fetchVideos(); setIsAddOpen(false); }} />
+      <AddVideoModal open={isEditOpen} onClose={() => { setIsEditOpen(false); setEditing(null); }} categories={categories} initial={editing ? { title: editing.title, url: editing.url, thumbnailUrl: editing.thumbnail_url, category: editing.category, tags: editing.tags } : null} submitLabel="수정 완료" onSubmit={async (p) => { if (!editing) return; await supabase.from('videos').update({ title: p.title, url: p.url, thumbnail_url: p.thumbnailUrl, category: p.category, tags: p.tags }).eq('id', editing.id); fetchVideos(); setIsEditOpen(false); setEditing(null); }} />
     </div>
   );
 }
