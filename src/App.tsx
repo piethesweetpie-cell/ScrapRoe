@@ -103,7 +103,7 @@ function App() {
         </div>
         
         {/* 🔥 요청하신 4px 띄우기 적용! 딱 보기 좋게 떨어질 겁니다. */}
-        <div className="relative mt-[2px]">
+        <div className="relative mt-[3px]">
           <Search className="absolute left-4 md:left-6 top-1/2 -translate-y-1/2 w-4 h-4 md:w-5 md:h-5 text-gray-400" />
           <input type="text" placeholder="검색..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full pl-10 md:pl-14 pr-6 py-3 md:py-4 bg-white border-2 border-black rounded-full focus:outline-none text-sm md:text-base" />
         </div>
