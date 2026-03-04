@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import Masonry from 'react-masonry-css';
-import { Search } from 'lucide-react'; // 🔥 말썽꾸러기 X 아이콘은 삭제했습니다!
+import { Search } from 'lucide-react'; 
 import VideoCard from './components/VideoCard';
 import AddVideoModal from './components/AddVideoModal';
 import { supabase } from './lib/supabaseClient'; 
@@ -35,7 +35,7 @@ function App() {
   const [currentPage, setCurrentPage] = useState(1);
   const [viewMode, setViewMode] = useState<'large' | 'small'>('large'); 
 
-  // 🔥 에러 방지: 화면이 켜진 직후에 모바일인지 확인하고 '작게' 모드로 바꿔줍니다.
+  // 🔥 모바일일 경우 자동으로 '작게' 모드로 시작하게 함
   useEffect(() => {
     if (typeof window !== 'undefined' && window.innerWidth < 768) {
       setViewMode('small');
@@ -152,7 +152,6 @@ function App() {
                 className="absolute right-3 top-1/2 -translate-y-1/2 w-6 h-6 flex items-center justify-center text-gray-400 hover:text-black hover:bg-gray-100 rounded-full transition-all text-xs"
                 title="검색어 지우기"
               >
-                {/* 🔥 X 아이콘 대신 텍스트로 대체해서 에러 원천 차단 */}
                 ✕
               </button>
             )}
