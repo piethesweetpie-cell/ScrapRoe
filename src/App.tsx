@@ -75,16 +75,14 @@ function App() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#fff0f5] via-white via-40% to-[#f0f8ff] text-black overflow-x-hidden w-full">
       
-      {/* 1. 헤더 영역 */}
-      <div className="max-w-[1920px] mx-auto px-4 sm:px-8 pt-6 md:pt-10 pb-6 flex flex-col md:flex-row items-start md:items-end justify-between gap-4 md:gap-6">
+      {/* 1. 헤더 영역 (pt-3과 md:pt-7로 정확히 12px씩 위로 올림) */}
+      <div className="max-w-[1920px] mx-auto px-4 sm:px-8 pt-3 md:pt-7 pb-6 flex flex-col md:flex-row items-start md:items-end justify-between gap-4 md:gap-6 w-full">
         <div className="flex items-center md:items-end gap-3 md:gap-4 leading-none">
-          {/* 로고 크기 증가: h-10 -> h-12 */}
           <img src={logoImg} alt="Logo" className="h-12 sm:h-14 md:h-16 w-auto object-contain" />
-          {/* 타이틀 크기 증가: text-4xl -> text-5xl */}
           <h1 className="text-5xl md:text-7xl font-black tracking-tighter">SCRAP ROE</h1>
         </div>
-        {/* 모바일 우측 정렬: self-end 추가 */}
-        <div className="flex gap-2 md:gap-3 self-end md:self-auto">
+        {/* 🔥 핵심 수정 구간: 모바일에서 상자를 꽉 채우고(w-full) 요소들을 오른쪽으로 밉니다(justify-end) */}
+        <div className="w-full md:w-auto flex justify-end gap-2 md:gap-3">
           <button onClick={() => setIsAddOpen(true)} className="px-5 md:px-7 py-2 md:py-3 bg-[#FF66C4] text-white rounded-full text-sm md:text-base font-bold shadow-md hover:bg-[#ff4d94] transition-all">Add</button>
           <button onClick={() => setIsCategoryEditMode(!isCategoryEditMode)} className={`px-4 md:px-6 py-2 md:py-3 border-[2px] md:border-[3px] border-black rounded-full text-sm md:text-base font-bold transition-all ${isCategoryEditMode ? 'bg-black text-white' : 'hover:bg-gray-100'}`}>Edit</button>
         </div>
