@@ -8,9 +8,8 @@ const AddVideoModal = ({ open, onClose, categories, initial, onSubmit }: any) =>
   const [category, setCategory] = useState('');
   const [tags, setTags] = useState('');
   const [isFetching, setIsFetching] = useState(false);
-  const [errorMsg, setErrorMsg] = useState('');
 
-  // 1. 모달 열릴 때 초기화
+  // 1. 초기화
   useEffect(() => {
     if (open) {
       setUrl(initial?.url || '');
@@ -18,20 +17,17 @@ const AddVideoModal = ({ open, onClose, categories, initial, onSubmit }: any) =>
       setThumbnailUrl(initial?.thumbnailUrl || initial?.thumbnail_url || '');
       setCategory(initial?.category || categories[0] || '');
       setTags(initial?.tags ? initial.tags.join(', ') : '');
-      setErrorMsg('');
     }
   }, [open, initial, categories]);
 
-  // 2. 🔥 [완벽 복구] 디바운스 + 로컬스토리지 캐싱이 적용된 추출 엔진
+  // 2. 🔥 에러 없는 순수 추출 로직 (외부 API 의존도 0%)
   useEffect(() => {
-    // URL이 없거나, 수정 모드(initial)거나, 모달이 닫혀있으면 실행 안 함
     if (!url || initial || !open) return;
 
     const fetchMetadata = async () => {
       setIsFetching(true);
-      setErrorMsg('');
 
-      // ✅ 1. 유튜브 처리 (가장 빠르고 안전한 방식)
+      // ✅ 유튜브 (가장 안전한 noembed 사용)
       if (url.includes('youtube.com') || url.includes('youtu.be')) {
         const videoId = url.split('v=')[1]?.split('&')[0] || url.split('/').pop()?.split('?')[0];
         if (videoId) {
@@ -46,67 +42,26 @@ const AddVideoModal = ({ open, onClose, categories, initial, onSubmit }: any) =>
         return;
       }
 
-      // ✅ 2. 인스타그램 처리 (Microlink API + 캐싱)
+      // ✅ 인스타그램 (통신 없이 텍스트만 조합하여 429 에러 원천 차단)
       if (url.includes('instagram.com')) {
-        // 주소 뒤의 지저분한 파라미터(?utm_source=...) 제거하여 고유 키 생성
         const cleanUrl = url.split('?')[0].replace(/\/$/, "");
-        const cacheKey = `meta:${cleanUrl}`;
-
-        // [캐시 확인] 이미 불러온 적 있는 주소면 API 호출 없이 로컬에서 바로 꺼냄
-        const cached = localStorage.getItem(cacheKey);
-        if (cached) {
-          try {
-            const parsed = JSON.parse(cached);
-            setTitle(parsed.title || 'Instagram Video');
-            setThumbnailUrl(parsed.thumbnailUrl || '');
-            setIsFetching(false);
-            return; // 캐시가 있으면 여기서 즉시 종료 (API 호출량 0)
-          } catch (e) { /* 파싱 에러 시 무시하고 진행 */ }
-        }
-
-        // [API 호출] 캐시에 없으면 Microlink 호출
-        setTitle('정보를 불러오는 중입니다...');
-        try {
-          const res = await fetch(`https://api.microlink.io?url=${encodeURIComponent(cleanUrl)}`);
-          
-          if (res.status === 429) {
-            throw new Error('429');
-          }
-
-          const data = await res.json();
-          let fetchedTitle = 'Instagram Video';
-          let fetchedThumb = '';
-
-          if (data.status === 'success') {
-            if (data.data.title) fetchedTitle = data.data.title;
-            if (data.data.image?.url) fetchedThumb = data.data.image.url;
-          }
-
-          setTitle(fetchedTitle);
-          setThumbnailUrl(fetchedThumb);
-
-          // [캐시 저장] 성공 시 로컬스토리지에 저장하여 다음번엔 호출 안 함
-          localStorage.setItem(cacheKey, JSON.stringify({ title: fetchedTitle, thumbnailUrl: fetchedThumb }));
-
-        } catch (e: any) {
-          if (e.message === '429') {
-            setErrorMsg('요청이 너무 많습니다. 잠시 후 시도하거나 직접 입력해주세요.');
-            setTitle('Instagram Video');
-          } else {
-            setTitle('Instagram Video');
-          }
-        } finally {
-          setIsFetching(false);
-        }
+        
+        // 🚨 fetch(통신)를 절대 하지 않고, 공식 썸네일 주소 규칙만 입력칸에 꽂아줍니다.
+        // 브라우저가 알아서 이미지를 띄울 수 있으면 띄우고, 막히면 빈칸으로 둡니다.
+        setTitle(''); // 제목은 사용자가 직접 입력하도록 비움
+        setThumbnailUrl(`${cleanUrl}/media/?size=l`);
+        setIsFetching(false);
+        return;
       }
+      
+      setIsFetching(false);
     };
 
-    // 🔥 [디바운스 적용] 타자를 치는 동안에는 타이머를 계속 초기화하고, 입력을 멈추고 800ms가 지나야 딱 1번만 fetch 실행
     const timer = setTimeout(() => {
       fetchMetadata();
-    }, 800);
+    }, 500);
 
-    return () => clearTimeout(timer); // 800ms 안에 url이 또 바뀌면 이전 타이머 취소
+    return () => clearTimeout(timer); 
   }, [url, initial, open]);
 
   if (!open) return null;
@@ -124,14 +79,14 @@ const AddVideoModal = ({ open, onClose, categories, initial, onSubmit }: any) =>
         <div className="space-y-4">
           <div>
             <label className="block text-[11px] font-black text-pink-400 mb-1 uppercase tracking-wider">
-              원본 URL {errorMsg && <span className="text-red-500 lowercase font-normal ml-2">{errorMsg}</span>}
+              원본 URL (유튜브는 제목 자동)
             </label>
             <input type="text" value={url} onChange={(e) => setUrl(e.target.value)} className="w-full px-4 py-3 border-2 border-gray-100 rounded-2xl outline-none text-sm focus:border-black transition-all" placeholder="주소를 붙여넣으세요" />
           </div>
 
           <div>
             <label className="block text-[11px] font-black text-gray-400 mb-1 uppercase tracking-wider">
-              제목 {isFetching && <span className="text-pink-400 lowercase font-normal ml-2 animate-pulse">불러오는 중...</span>}
+              제목 {isFetching && <span className="text-pink-400 lowercase font-normal ml-2 animate-pulse">처리 중...</span>}
             </label>
             <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} className="w-full px-4 py-3 border-2 border-gray-100 rounded-2xl outline-none text-sm transition-all" placeholder="제목을 입력하세요" />
           </div>
@@ -141,14 +96,15 @@ const AddVideoModal = ({ open, onClose, categories, initial, onSubmit }: any) =>
             <div className="flex gap-3 items-center">
               <div className="w-16 h-16 bg-gray-50 rounded-2xl overflow-hidden border-2 border-gray-100 flex-shrink-0 relative">
                 {thumbnailUrl ? (
+                  /* 인스타그램이 막으면 엑스박스 대신 숨김 처리 */
                   <img src={thumbnailUrl} className="w-full h-full object-cover" onError={(e) => e.currentTarget.style.display = 'none'} />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-[10px] text-gray-300 font-bold uppercase">
-                    {isFetching ? '로딩중' : 'No Img'}
+                    No Img
                   </div>
                 )}
               </div>
-              <input type="text" value={thumbnailUrl} onChange={(e) => setThumbnailUrl(e.target.value)} className="flex-1 px-4 py-2 border-2 border-gray-100 rounded-xl text-[10px] text-gray-400 outline-none" placeholder="자동으로 추출됩니다" />
+              <input type="text" value={thumbnailUrl} onChange={(e) => setThumbnailUrl(e.target.value)} className="flex-1 px-4 py-2 border-2 border-gray-100 rounded-xl text-[10px] text-gray-400 outline-none" placeholder="이미지 주소" />
             </div>
           </div>
 
