@@ -15,7 +15,7 @@ const AddVideoModal: React.FC<AddVideoModalProps> = ({
   const [category, setCategory] = useState('');
   const [tags, setTags] = useState('');
 
-  // 1. 데이터 초기화
+  // 1. 모달 열릴 때 초기화
   useEffect(() => {
     if (open) {
       if (initial) {
@@ -28,7 +28,7 @@ const AddVideoModal: React.FC<AddVideoModalProps> = ({
     }
   }, [open, initial, categories]);
 
-  // 2. 🔥 썸네일 & 제목 자동 추출 (Youtube/Instagram 대응)
+  // 2. 썸네일 및 제목 자동 추출 로직
   useEffect(() => {
     const fetchMetadata = async () => {
       if (!url || initial || !open) return;
@@ -57,7 +57,7 @@ const AddVideoModal: React.FC<AddVideoModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-      <div className="bg-white w-full max-w-md rounded-[32px] shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
+      <div className="bg-white w-full max-w-md rounded-[32px] shadow-2xl overflow-hidden">
         <div className="p-8">
           <div className="flex justify-between items-center mb-8">
             <h2 className="text-xl font-bold flex items-center gap-2">
@@ -74,7 +74,7 @@ const AddVideoModal: React.FC<AddVideoModalProps> = ({
 
             <div>
               <label className="block text-[11px] font-black text-gray-400 mb-1.5 ml-1 uppercase tracking-wider">제목</label>
-              <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} className="w-full px-5 py-3.5 border-2 border-gray-100 rounded-2xl focus:border-black outline-none text-sm" placeholder="제목이 자동 입력됩니다" />
+              <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} className="w-full px-5 py-3.5 border-2 border-gray-100 rounded-2xl focus:border-black outline-none text-sm" />
             </div>
 
             <div>
@@ -107,7 +107,7 @@ const AddVideoModal: React.FC<AddVideoModalProps> = ({
 
           <button 
             onClick={() => onSubmit({ title, url, thumbnailUrl, category, tags: tags.split(',').map(t => t.trim()).filter(Boolean) })}
-            className="w-full py-4 bg-black text-white rounded-2xl font-bold mt-10 hover:bg-gray-800 transition-all shadow-lg active:scale-95"
+            className="w-full py-4 bg-black text-white rounded-2xl font-bold mt-10 hover:bg-gray-800 active:scale-95 transition-all shadow-lg"
           >
             {submitLabel}
           </button>
