@@ -31,7 +31,7 @@ const AddVideoModal: React.FC<AddVideoModalProps> = ({
     }
   }, [initial, open, categories]);
 
-  // 🔥 [완전 복구] 인스타그램 & 유튜브 썸네일 자동 추출 엔진
+  // 🔥 [복구] 썸네일 자동 추출 로직 (Original)
   useEffect(() => {
     if (!url || initial) return;
     let detectedThumb = '';
@@ -49,6 +49,7 @@ const AddVideoModal: React.FC<AddVideoModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+      {/* 32px 라운딩 + 화이트 디자인 */}
       <div className="bg-white w-full max-w-md rounded-[32px] shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
         <div className="p-8">
           <div className="flex justify-between items-center mb-6">
@@ -57,15 +58,18 @@ const AddVideoModal: React.FC<AddVideoModalProps> = ({
             </h2>
             <button onClick={onClose} className="text-gray-400 hover:text-black transition-colors"><X className="w-6 h-6" /></button>
           </div>
+
           <div className="space-y-5">
             <div>
-              <label className="block text-[11px] font-black text-pink-400 mb-1 ml-1 uppercase tracking-wider">원본 URL</label>
+              <label className="block text-[11px] font-black text-pink-400 mb-1 ml-1 uppercase tracking-wider">원본 URL <span className="font-normal text-gray-300">(자동 추출)</span></label>
               <input type="text" value={url} onChange={(e) => setUrl(e.target.value)} className="w-full px-5 py-3 border-2 border-gray-100 rounded-2xl focus:border-black outline-none text-sm" placeholder="https://..." />
             </div>
+
             <div>
               <label className="block text-[11px] font-black text-gray-400 mb-1 ml-1 uppercase tracking-wider">제목</label>
               <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} className="w-full px-5 py-3 border-2 border-gray-100 rounded-2xl focus:border-black outline-none text-sm" placeholder="영상 제목 입력" />
             </div>
+
             <div>
               <label className="block text-[11px] font-black text-gray-400 mb-1 ml-1 uppercase tracking-wider">썸네일 이미지</label>
               <div className="flex gap-3 items-center">
@@ -75,6 +79,7 @@ const AddVideoModal: React.FC<AddVideoModalProps> = ({
                 <input type="text" value={thumbnailUrl} onChange={(e) => setThumbnailUrl(e.target.value)} className="flex-1 px-4 py-2 border-2 border-gray-100 rounded-xl text-[10px] text-gray-400 outline-none" />
               </div>
             </div>
+
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <label className="block text-[11px] font-black text-gray-400 mb-1 ml-1 uppercase tracking-wider">카테고리</label>
@@ -88,7 +93,13 @@ const AddVideoModal: React.FC<AddVideoModalProps> = ({
               </div>
             </div>
           </div>
-          <button onClick={() => onSubmit({ title, url, thumbnailUrl, category, tags: tags.split(',').map(t => t.trim()).filter(Boolean) })} className="w-full py-4 bg-black text-white rounded-[20px] font-bold mt-8 hover:bg-gray-800 transition-all shadow-lg">{submitLabel}</button>
+
+          <button 
+            onClick={() => onSubmit({ title, url, thumbnailUrl, category, tags: tags.split(',').map(t => t.trim()).filter(Boolean) })}
+            className="w-full py-4 bg-black text-white rounded-[20px] font-bold mt-8 hover:bg-gray-800 transition-all shadow-lg"
+          >
+            {submitLabel}
+          </button>
         </div>
       </div>
     </div>
