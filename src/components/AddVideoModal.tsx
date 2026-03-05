@@ -31,7 +31,7 @@ const AddVideoModal: React.FC<AddVideoModalProps> = ({
     }
   }, [initial, open, categories]);
 
-  // 🔥 [복구] 썸네일 및 제목 자동 추출 로직
+  // 🔥 [완전 복구] 썸네일 및 제목 자동 추출 로직
   useEffect(() => {
     const fetchMetadata = async () => {
       if (!url || initial) return;
@@ -48,11 +48,11 @@ const AddVideoModal: React.FC<AddVideoModalProps> = ({
           } catch (e) { console.error("제목 추출 실패:", e); }
         }
       } 
-      // 2. 인스타그램 (썸네일 추출 + 제목은 'Instagram'으로 자동 입력)
+      // 2. 인스타그램 (썸네일 추출)
       else if (url.includes('instagram.com')) {
         const cleanUrl = url.split('?')[0].replace(/\/$/, "");
         setThumbnailUrl(`${cleanUrl}/media/?size=l`);
-        setTitle('Instagram'); // 인스타그램은 보안상 제목 추출이 어려워 기본값 설정
+        setTitle('Instagram'); 
       }
     };
 
@@ -74,13 +74,13 @@ const AddVideoModal: React.FC<AddVideoModalProps> = ({
 
           <div className="space-y-5">
             <div>
-              <label className="block text-[11px] font-black text-pink-400 mb-1 ml-1 uppercase tracking-wider">원본 URL</label>
-              <input type="text" value={url} onChange={(e) => setUrl(e.target.value)} className="w-full px-5 py-3 border-2 border-gray-100 rounded-2xl focus:border-black outline-none text-sm" placeholder="https://..." />
+              <label className="block text-[11px] font-black text-pink-400 mb-1 ml-1 uppercase tracking-wider">원본 URL <span className="font-normal text-gray-300">(자동 추출)</span></label>
+              <input type="text" value={url} onChange={(e) => setUrl(e.target.value)} className="w-full px-5 py-3 border-2 border-gray-100 rounded-2xl focus:border-black outline-none transition-all text-sm" placeholder="https://..." />
             </div>
 
             <div>
               <label className="block text-[11px] font-black text-gray-400 mb-1 ml-1 uppercase tracking-wider">제목</label>
-              <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} className="w-full px-5 py-3 border-2 border-gray-100 rounded-2xl focus:border-black outline-none text-sm" placeholder="영상 제목 자동 입력됨" />
+              <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} className="w-full px-5 py-3 border-2 border-gray-100 rounded-2xl focus:border-black outline-none transition-all text-sm" placeholder="영상 제목 입력" />
             </div>
 
             <div>
