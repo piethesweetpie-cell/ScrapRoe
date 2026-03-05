@@ -19,7 +19,7 @@ const AddVideoModal: React.FC<AddVideoModalProps> = ({
   const [category, setCategory] = useState('');
   const [tags, setTags] = useState('');
 
-  // 팝업 열릴 때 초기화
+  // 팝업이 열릴 때 데이터 초기화 (수정 시에도 대응)
   useEffect(() => {
     if (initial) {
       setUrl(initial.url || '');
@@ -32,13 +32,13 @@ const AddVideoModal: React.FC<AddVideoModalProps> = ({
     }
   }, [initial, open, categories]);
 
-  // 🔥 원래의 자동 썸네일 추출 로직 (가장 확실한 방식)
+  // 🔥 [복구] URL 입력 시 썸네일 자동 추출 로직
   useEffect(() => {
     if (!url || initial) return;
 
     let detectedThumb = '';
 
-    // 인스타그램 썸네일 추출
+    // 인스타그램 썸네일 추출 (가장 확실한 방식)
     if (url.includes('instagram.com')) {
       const cleanUrl = url.split('?')[0].replace(/\/$/, "");
       detectedThumb = `${cleanUrl}/media/?size=l`;
@@ -58,8 +58,8 @@ const AddVideoModal: React.FC<AddVideoModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-      {/* 32px 라운딩의 깔끔한 화이트 박스 복구 */}
-      <div className="bg-white w-full max-w-md rounded-[32px] shadow-2xl overflow-hidden">
+      {/* 32px 라운딩의 심플 화이트 박스 복구 */}
+      <div className="bg-white w-full max-w-md rounded-[32px] shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
         <div className="p-8">
           <div className="flex justify-between items-center mb-8">
             <h2 className="text-xl font-bold flex items-center gap-2">
