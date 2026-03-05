@@ -41,7 +41,6 @@ const AddVideoModal: React.FC<AddVideoModalProps> = ({ open, onClose, categories
       const inputUrl = url.trim();
 
       try {
-        // ✅ 유튜브 처리
         if (inputUrl.includes('youtube.com') || inputUrl.includes('youtu.be')) {
           const videoId =
             inputUrl.split('v=')[1]?.split('&')[0] ||
@@ -65,7 +64,6 @@ const AddVideoModal: React.FC<AddVideoModalProps> = ({ open, onClose, categories
           return;
         }
 
-        // ✅ 인스타그램 처리 (JSONLink + 캐시)
         if (inputUrl.includes('instagram.com')) {
           const cleanUrl = inputUrl.split('?')[0].replace(/\/$/, '');
           const cacheKey = `meta:${cleanUrl}`;
@@ -94,21 +92,34 @@ const AddVideoModal: React.FC<AddVideoModalProps> = ({ open, onClose, categories
 
             const data1 = await res1.json();
             
-            // 🔥 제목(Title) 추출 초강화 로직: description(본문) 탐색
+            // 🚀 [수정됨] 제목(title) 우선순위 복구! (아이디가 정상적으로 나옵니다)
             let extractedTitle =
-              data1?.description ||
-              data1?.meta?.description ||
-              data1?.og?.description ||
               data1?.title ||
               data1?.meta?.title ||
               data1?.og?.title ||
+              data1?.open_graph?.title ||
+              data1?.twitter?.title ||
+              data1?.description ||
               '';
 
-            const junkPhrases = ['Instagram', 'Instagram photo/video', 'Create an account', 'Log in', 'Welcome back'];
-            if (junkPhrases.some(phrase => extractedTitle.includes(phrase)) && extractedTitle.length < 100) {
+            // 🧹 인스타 특유의 "조회수, 좋아요" 쓰레기 텍스트 청소기 (한/영 완벽 대응)
+            // 예: "1.2M Likes, 200 Comments - User (@id) ..." -> "User (@id) ..."
+            if (extractedTitle.includes(' - ')) {
+              const splitArr = extractedTitle.split(' - ');
+              const possibleStats = splitArr[0];
+              // 앞부분에 숫자와 좋아요/조회수 관련 단어가 있으면 그 부분만 날려버립니다.
+              if (/[0-9]/.test(possibleStats) && /(Like|View|Comment|Play|좋아요|조회수|댓글)/i.test(possibleStats)) {
+                extractedTitle = splitArr.slice(1).join(' - ');
+              }
+            }
+
+            // 🚨 무의미한 로그인 요구 텍스트만 필터링 (Instagram 단어는 살려둠)
+            const junkPhrases = ['Create an account', 'Log in', 'Welcome back'];
+            if (junkPhrases.some(phrase => extractedTitle.includes(phrase))) {
               extractedTitle = ''; 
             }
 
+            // 제목이 너무 길면 40자에서 자르기
             if (extractedTitle.length > 40) {
               extractedTitle = extractedTitle.substring(0, 40) + '...';
             }
