@@ -31,25 +31,38 @@ const AddVideoModal: React.FC<AddVideoModalProps> = ({
     }
   }, [initial, open, categories]);
 
-  // 🔥 [복구] 썸네일 자동 추출 로직 (Original)
+  // 🔥 [복구] 썸네일 및 제목 자동 추출 로직
   useEffect(() => {
-    if (!url || initial) return;
-    let detectedThumb = '';
-    if (url.includes('instagram.com')) {
-      const cleanUrl = url.split('?')[0].replace(/\/$/, "");
-      detectedThumb = `${cleanUrl}/media/?size=l`;
-    } else if (url.includes('youtube.com') || url.includes('youtu.be')) {
-      const videoId = url.split('v=')[1]?.split('&')[0] || url.split('/').pop()?.split('?')[0];
-      if (videoId) detectedThumb = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
-    }
-    if (detectedThumb) setThumbnailUrl(detectedThumb);
+    const fetchMetadata = async () => {
+      if (!url || initial) return;
+
+      // 1. 유튜브 (제목 + 썸네일 추출)
+      if (url.includes('youtube.com') || url.includes('youtu.be')) {
+        const videoId = url.split('v=')[1]?.split('&')[0] || url.split('/').pop()?.split('?')[0];
+        if (videoId) {
+          setThumbnailUrl(`https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`);
+          try {
+            const res = await fetch(`https://noembed.com/embed?url=${url}`);
+            const data = await res.json();
+            if (data.title) setTitle(data.title);
+          } catch (e) { console.error("제목 추출 실패:", e); }
+        }
+      } 
+      // 2. 인스타그램 (썸네일 추출 + 제목은 'Instagram'으로 자동 입력)
+      else if (url.includes('instagram.com')) {
+        const cleanUrl = url.split('?')[0].replace(/\/$/, "");
+        setThumbnailUrl(`${cleanUrl}/media/?size=l`);
+        setTitle('Instagram'); // 인스타그램은 보안상 제목 추출이 어려워 기본값 설정
+      }
+    };
+
+    fetchMetadata();
   }, [url, initial]);
 
   if (!open) return null;
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-      {/* 32px 라운딩 + 화이트 디자인 */}
       <div className="bg-white w-full max-w-md rounded-[32px] shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
         <div className="p-8">
           <div className="flex justify-between items-center mb-6">
@@ -61,20 +74,20 @@ const AddVideoModal: React.FC<AddVideoModalProps> = ({
 
           <div className="space-y-5">
             <div>
-              <label className="block text-[11px] font-black text-pink-400 mb-1 ml-1 uppercase tracking-wider">원본 URL <span className="font-normal text-gray-300">(자동 추출)</span></label>
+              <label className="block text-[11px] font-black text-pink-400 mb-1 ml-1 uppercase tracking-wider">원본 URL</label>
               <input type="text" value={url} onChange={(e) => setUrl(e.target.value)} className="w-full px-5 py-3 border-2 border-gray-100 rounded-2xl focus:border-black outline-none text-sm" placeholder="https://..." />
             </div>
 
             <div>
               <label className="block text-[11px] font-black text-gray-400 mb-1 ml-1 uppercase tracking-wider">제목</label>
-              <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} className="w-full px-5 py-3 border-2 border-gray-100 rounded-2xl focus:border-black outline-none text-sm" placeholder="영상 제목 입력" />
+              <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} className="w-full px-5 py-3 border-2 border-gray-100 rounded-2xl focus:border-black outline-none text-sm" placeholder="영상 제목 자동 입력됨" />
             </div>
 
             <div>
               <label className="block text-[11px] font-black text-gray-400 mb-1 ml-1 uppercase tracking-wider">썸네일 이미지</label>
               <div className="flex gap-3 items-center">
                 <div className="w-16 h-16 bg-gray-50 rounded-2xl overflow-hidden border-2 border-gray-100 flex-shrink-0">
-                  {thumbnailUrl ? <img src={thumbnailUrl} className="w-full h-full object-cover" alt="미리보기" /> : <div className="w-full h-full flex items-center justify-center text-[10px] text-gray-300 font-bold">NO IMG</div>}
+                  {thumbnailUrl ? <img src={thumbnailUrl} className="w-full h-full object-cover" alt="미리보기" /> : <div className="w-full h-full flex items-center justify-center text-[10px] text-gray-300 font-bold uppercase">No Img</div>}
                 </div>
                 <input type="text" value={thumbnailUrl} onChange={(e) => setThumbnailUrl(e.target.value)} className="flex-1 px-4 py-2 border-2 border-gray-100 rounded-xl text-[10px] text-gray-400 outline-none" />
               </div>
@@ -96,7 +109,7 @@ const AddVideoModal: React.FC<AddVideoModalProps> = ({
 
           <button 
             onClick={() => onSubmit({ title, url, thumbnailUrl, category, tags: tags.split(',').map(t => t.trim()).filter(Boolean) })}
-            className="w-full py-4 bg-black text-white rounded-[20px] font-bold mt-8 hover:bg-gray-800 transition-all shadow-lg"
+            className="w-full py-4 bg-black text-white rounded-[20px] font-bold mt-8 hover:bg-gray-800 active:scale-95 transition-all shadow-lg"
           >
             {submitLabel}
           </button>
