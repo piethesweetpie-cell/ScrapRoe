@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import Masonry from 'react-masonry-css';
-import { Search } from 'lucide-react'; 
+import { Search, Plus } from 'lucide-react'; // 🔥 Plus 아이콘 추가
 import VideoCard from './components/VideoCard';
 import AddVideoModal from './components/AddVideoModal';
 import { supabase } from './lib/supabaseClient'; 
@@ -27,13 +27,17 @@ function App() {
     typeof window !== 'undefined' && window.innerWidth < 768 ? 'small' : 'large'
   ); 
 
-  // 🔥 기기 간 동기화 핵심: DB에서 직접 데이터를 가져와 카테고리 목록을 실시간 생성합니다.
+  // DB에서 데이터를 가져와 카테고리 목록 생성 (기기 간 동기화)
   const fetchVideos = async () => {
     const { data, error } = await supabase.from('videos').select('*').order('created_at', { ascending: false });
     if (!error && data) {
       setVideos(data);
       const uniqueCats = Array.from(new Set(data.map(v => v.category))).filter(Boolean);
-      setCategories(uniqueCats as string[]);
+      // 기존에 있던 카테고리들과 새로 추가된(아직 영상이 없는) 카테고리를 합쳐서 보여줍니다.
+      setCategories(prev => {
+        const combined = Array.from(new Set([...prev, ...(uniqueCats as string[])]));
+        return combined;
+      });
     }
   };
 
@@ -52,6 +56,17 @@ function App() {
     setCurrentPage(1); 
   }, [videos, selectedCategory, searchQuery]);
 
+  // 🔥 [신규] 카테고리 직접 추가 함수 복구
+  const handleAddCategory = () => {
+    const name = window.prompt('새 카테고리 이름을 입력하세요:');
+    if (name && name.trim()) {
+      const trimmed = name.trim();
+      if (!categories.includes(trimmed)) {
+        setCategories([...categories, trimmed]); // 목록에 즉시 추가
+      }
+    }
+  };
+
   const handleEditCategory = async (oldName: string) => {
     const newName = window.prompt(`'${oldName}'의 새 이름을 입력하세요:`, oldName);
     if (newName && newName.trim() && newName !== oldName) {
@@ -64,6 +79,7 @@ function App() {
     e.stopPropagation(); 
     if (window.confirm(`'${catToDelete}' 카테고리의 데이터를 모두 삭제합니까?`)) {
       await supabase.from('videos').delete().eq('category', catToDelete);
+      setCategories(categories.filter(c => c !== catToDelete)); // 목록에서도 즉시 삭제
       fetchVideos();
     }
   };
@@ -79,7 +95,6 @@ function App() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#fff0f5] via-white to-[#f0f8ff] text-black w-full overflow-x-hidden">
       <div className="max-w-[1920px] mx-auto px-4 sm:px-8 pt-5 pb-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-        {/* 로고 클릭 시 초기화 */}
         <div onClick={() => { setSelectedCategory('All'); setSearchQuery(''); setCurrentPage(1); }} className="flex items-center gap-4 cursor-pointer">
           <img src={logoImg} alt="Logo" className="h-10 md:h-16 w-auto" />
           <h1 className="text-4xl md:text-7xl font-black tracking-tighter">SCRAP ROE</h1>
@@ -97,7 +112,6 @@ function App() {
             <input type="text" placeholder="검색..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full h-full pl-10 md:pl-12 pr-10 border-2 border-black rounded-full outline-none text-sm md:text-base focus:border-[#FF66C4] transition-colors" />
             {searchQuery && <button onClick={() => setSearchQuery('')} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-black transition-colors text-xs">✕</button>}
           </div>
-          {/* 크게/작게 토글 */}
           <div className="flex border-2 border-black rounded-full p-1 h-11 md:h-12 bg-white shrink-0">
             <button onClick={() => { setViewMode('large'); setCurrentPage(1); }} className={`px-3 md:px-5 rounded-full text-[10px] md:text-xs font-bold transition-all ${viewMode === 'large' ? 'bg-[#FF66C4] text-white shadow-sm' : 'text-gray-500 hover:text-black'}`}>■ 크게</button>
             <button onClick={() => { setViewMode('small'); setCurrentPage(1); }} className={`px-3 md:px-5 rounded-full text-[10px] md:text-xs font-bold transition-all ${viewMode === 'small' ? 'bg-[#FF66C4] text-white shadow-sm' : 'text-gray-500 hover:text-black'}`}>▦ 작게</button>
@@ -112,6 +126,17 @@ function App() {
               {isCategoryEditMode && <span onClick={(e) => handleDeleteCategory(e, cat)} className="absolute right-2 top-1/2 -translate-y-1/2 w-5 h-5 flex items-center justify-center bg-red-100 text-red-500 rounded-full text-[10px] hover:bg-red-500 hover:text-white transition-colors text-xs">✕</span>}
             </button>
           ))}
+          
+          {/* 🔥 사라졌던 [+] 버튼 복구! */}
+          {isCategoryEditMode && (
+            <button 
+              onClick={handleAddCategory}
+              className="px-4 py-1.5 rounded-full font-bold border-2 border-dashed border-gray-400 text-gray-400 hover:border-black hover:text-black transition-all flex items-center justify-center gap-1"
+              title="카테고리 추가"
+            >
+              <Plus className="w-4 h-4" />
+            </button>
+          )}
         </div>
 
         <Masonry breakpointCols={currentBreakpoints} className="masonry-grid" columnClassName="masonry-grid_column">
@@ -120,7 +145,6 @@ function App() {
           ))}
         </Masonry>
 
-        {/* 페이지네이션 복구 */}
         {totalPages > 1 && (
           <div className="flex justify-center items-center gap-2 mt-12 pb-12">
             <button onClick={() => { setCurrentPage(p => Math.max(1, p - 1)); window.scrollTo({ top: 0, behavior: 'smooth' }); }} disabled={currentPage === 1} className="px-4 py-2 border-2 border-black rounded-full text-sm font-bold disabled:opacity-20 hover:bg-gray-100 transition-all"> &lt;&lt; </button>
@@ -132,7 +156,6 @@ function App() {
         )}
       </div>
 
-      {/* 🔥 [Add] DB 등록 로직 강화: 이름표(thumbnail_url)를 확실하게 매칭합니다. */}
       <AddVideoModal 
         open={isAddOpen} 
         onClose={() => setIsAddOpen(false)} 
@@ -146,7 +169,6 @@ function App() {
         }} 
       />
 
-      {/* 🔥 [Edit] 수정 로직 강화 */}
       <AddVideoModal 
         open={isEditOpen} 
         onClose={() => { setIsEditOpen(false); setEditing(null); }} 
