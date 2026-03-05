@@ -15,6 +15,7 @@ const AddVideoModal: React.FC<AddVideoModalProps> = ({
   const [category, setCategory] = useState('');
   const [tags, setTags] = useState('');
 
+  // 1. 데이터 초기화
   useEffect(() => {
     if (open) {
       if (initial) {
@@ -27,12 +28,11 @@ const AddVideoModal: React.FC<AddVideoModalProps> = ({
     }
   }, [open, initial, categories]);
 
-  // 🔥 [복구] 썸네일 & 제목 추출 엔진 (중복 없이 한 번만 실행)
+  // 2. 🔥 썸네일 & 제목 자동 추출 (Youtube/Instagram 대응)
   useEffect(() => {
     const fetchMetadata = async () => {
       if (!url || initial || !open) return;
 
-      // 유튜브 처리
       if (url.includes('youtube.com') || url.includes('youtu.be')) {
         const videoId = url.split('v=')[1]?.split('&')[0] || url.split('/').pop()?.split('?')[0];
         if (videoId) {
@@ -44,7 +44,6 @@ const AddVideoModal: React.FC<AddVideoModalProps> = ({
           } catch (e) { console.error(e); }
         }
       } 
-      // 인스타그램 처리
       else if (url.includes('instagram.com')) {
         const cleanUrl = url.split('?')[0].replace(/\/$/, "");
         setThumbnailUrl(`${cleanUrl}/media/?size=l`);
@@ -58,8 +57,7 @@ const AddVideoModal: React.FC<AddVideoModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-      {/* 화이트 32px 라운딩 모달 디자인 복구 */}
-      <div className="bg-white w-full max-w-md rounded-[32px] shadow-2xl overflow-hidden">
+      <div className="bg-white w-full max-w-md rounded-[32px] shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
         <div className="p-8">
           <div className="flex justify-between items-center mb-8">
             <h2 className="text-xl font-bold flex items-center gap-2">
@@ -71,12 +69,12 @@ const AddVideoModal: React.FC<AddVideoModalProps> = ({
           <div className="space-y-6">
             <div>
               <label className="block text-[11px] font-black text-pink-400 mb-1.5 ml-1 uppercase tracking-wider">원본 URL</label>
-              <input type="text" value={url} onChange={(e) => setUrl(e.target.value)} className="w-full px-5 py-3.5 border-2 border-gray-100 rounded-2xl focus:border-black outline-none text-sm" placeholder="주소를 입력하세요" />
+              <input type="text" value={url} onChange={(e) => setUrl(e.target.value)} className="w-full px-5 py-3.5 border-2 border-gray-100 rounded-2xl focus:border-black outline-none text-sm" placeholder="https://..." />
             </div>
 
             <div>
               <label className="block text-[11px] font-black text-gray-400 mb-1.5 ml-1 uppercase tracking-wider">제목</label>
-              <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} className="w-full px-5 py-3.5 border-2 border-gray-100 rounded-2xl focus:border-black outline-none text-sm" />
+              <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} className="w-full px-5 py-3.5 border-2 border-gray-100 rounded-2xl focus:border-black outline-none text-sm" placeholder="제목이 자동 입력됩니다" />
             </div>
 
             <div>
@@ -109,7 +107,7 @@ const AddVideoModal: React.FC<AddVideoModalProps> = ({
 
           <button 
             onClick={() => onSubmit({ title, url, thumbnailUrl, category, tags: tags.split(',').map(t => t.trim()).filter(Boolean) })}
-            className="w-full py-4 bg-black text-white rounded-2xl font-bold mt-10 hover:bg-gray-800 active:scale-95 transition-all shadow-lg"
+            className="w-full py-4 bg-black text-white rounded-2xl font-bold mt-10 hover:bg-gray-800 transition-all shadow-lg active:scale-95"
           >
             {submitLabel}
           </button>
