@@ -19,7 +19,7 @@ const AddVideoModal: React.FC<AddVideoModalProps> = ({
   const [category, setCategory] = useState('');
   const [tags, setTags] = useState('');
 
-  // 팝업 열릴 때 데이터 초기화 로직
+  // 팝업 열릴 때 초기화
   useEffect(() => {
     if (initial) {
       setUrl(initial.url || '');
@@ -32,21 +32,21 @@ const AddVideoModal: React.FC<AddVideoModalProps> = ({
     }
   }, [initial, open, categories]);
 
-  // 🔥 다시 살아난 자동 썸네일 추출 엔진
+  // 🔥 원래의 자동 썸네일 추출 로직 (가장 확실한 방식)
   useEffect(() => {
     if (!url || initial) return;
 
     let detectedThumb = '';
 
-    // 1. 유튜브 썸네일 추출
-    if (url.includes('youtube.com') || url.includes('youtu.be')) {
+    // 인스타그램 썸네일 추출
+    if (url.includes('instagram.com')) {
+      const cleanUrl = url.split('?')[0].replace(/\/$/, "");
+      detectedThumb = `${cleanUrl}/media/?size=l`;
+    } 
+    // 유튜브 썸네일 추출
+    else if (url.includes('youtube.com') || url.includes('youtu.be')) {
       const videoId = url.split('v=')[1]?.split('&')[0] || url.split('/').pop()?.split('?')[0];
       if (videoId) detectedThumb = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
-    } 
-    // 2. 인스타그램 썸네일 추출 (가장 심플하고 확실한 방식)
-    else if (url.includes('instagram.com')) {
-      const cleanUrl = url.split('?')[0];
-      detectedThumb = `${cleanUrl}media/?size=l`;
     }
 
     if (detectedThumb) {
@@ -58,59 +58,58 @@ const AddVideoModal: React.FC<AddVideoModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-      {/* 원래의 둥글고 심플한 화이트 박스 디자인으로 롤백 */}
-      <div className="bg-white w-full max-w-md rounded-[32px] shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
+      {/* 32px 라운딩의 깔끔한 화이트 박스 복구 */}
+      <div className="bg-white w-full max-w-md rounded-[32px] shadow-2xl overflow-hidden">
         <div className="p-8">
-          <div className="flex justify-between items-center mb-6">
+          <div className="flex justify-between items-center mb-8">
             <h2 className="text-xl font-bold flex items-center gap-2">
               <span className="text-pink-500">🔗</span> {initial ? '레퍼런스 수정' : '새 레퍼런스 추가'}
             </h2>
             <button onClick={onClose} className="text-gray-400 hover:text-black transition-colors"><X className="w-6 h-6" /></button>
           </div>
 
-          <div className="space-y-5">
+          <div className="space-y-6">
             <div>
-              <label className="block text-[11px] font-black text-pink-400 mb-1 ml-1 uppercase tracking-wider">원본 URL <span className="font-normal text-gray-300">(붙여넣으면 썸네일 자동 추출)</span></label>
-              <input type="text" value={url} onChange={(e) => setUrl(e.target.value)} className="w-full px-5 py-3 border-2 border-gray-100 rounded-2xl focus:border-black outline-none transition-all text-sm" placeholder="https://..." />
+              <label className="block text-[11px] font-black text-pink-400 mb-1.5 ml-1 uppercase tracking-wider">원본 URL <span className="font-normal text-gray-300">(붙여넣으면 자동 추출)</span></label>
+              <input type="text" value={url} onChange={(e) => setUrl(e.target.value)} className="w-full px-5 py-3.5 border-2 border-gray-100 rounded-2xl focus:border-black outline-none transition-all text-sm" placeholder="https://..." />
             </div>
 
             <div>
-              <label className="block text-[11px] font-black text-gray-400 mb-1 ml-1 uppercase tracking-wider">제목</label>
-              <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} className="w-full px-5 py-3 border-2 border-gray-100 rounded-2xl focus:border-black outline-none transition-all text-sm" placeholder="영상 제목 입력" />
+              <label className="block text-[11px] font-black text-gray-400 mb-1.5 ml-1 uppercase tracking-wider">제목</label>
+              <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} className="w-full px-5 py-3.5 border-2 border-gray-100 rounded-2xl focus:border-black outline-none transition-all text-sm" placeholder="영상 제목 입력" />
             </div>
 
             <div>
-              <label className="block text-[11px] font-black text-gray-400 mb-1 ml-1 uppercase tracking-wider">썸네일 이미지</label>
-              <div className="flex gap-3 items-center">
+              <label className="block text-[11px] font-black text-gray-400 mb-1.5 ml-1 uppercase tracking-wider">썸네일 이미지</label>
+              <div className="flex gap-4 items-center">
                 <div className="w-16 h-16 bg-gray-50 rounded-2xl overflow-hidden border-2 border-gray-100 flex-shrink-0">
                   {thumbnailUrl ? (
-                    <img src={thumbnailUrl} className="w-full h-full object-cover" alt="미리보기" />
+                    <img src={thumbnailUrl} className="w-full h-full object-cover" alt="미리보기" onError={(e) => e.currentTarget.src = 'https://www.instagram.com/static/images/ico/favicon-192.png/b306addcc586.png'} />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center text-[10px] text-gray-300 font-bold">NO IMG</div>
+                    <div className="w-full h-full flex items-center justify-center text-[10px] text-gray-300 font-bold uppercase">No Img</div>
                   )}
                 </div>
-                <input type="text" value={thumbnailUrl} onChange={(e) => setThumbnailUrl(e.target.value)} className="flex-1 px-4 py-2 border-2 border-gray-100 rounded-xl text-[10px] text-gray-400 outline-none" placeholder="이미지 주소" />
+                <input type="text" value={thumbnailUrl} onChange={(e) => setThumbnailUrl(e.target.value)} className="flex-1 px-4 py-3 border-2 border-gray-100 rounded-xl text-[10px] text-gray-400 outline-none" />
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-[11px] font-black text-gray-400 mb-1 ml-1 uppercase tracking-wider">카테고리</label>
-                <select value={category} onChange={(e) => setCategory(e.target.value)} className="w-full px-4 py-3 border-2 border-gray-100 rounded-2xl outline-none text-sm appearance-none bg-white">
+                <label className="block text-[11px] font-black text-gray-400 mb-1.5 ml-1 uppercase tracking-wider">카테고리</label>
+                <select value={category} onChange={(e) => setCategory(e.target.value)} className="w-full px-4 py-3.5 border-2 border-gray-100 rounded-2xl outline-none text-sm bg-white">
                   {categories.map(c => <option key={c} value={c}>{c}</option>)}
                 </select>
               </div>
               <div>
-                <label className="block text-[11px] font-black text-gray-400 mb-1 ml-1 uppercase tracking-wider">태그</label>
-                <input type="text" value={tags} onChange={(e) => setTags(e.target.value)} className="w-full px-4 py-3 border-2 border-gray-100 rounded-2xl outline-none text-sm" placeholder="누끼, 색보정" />
+                <label className="block text-[11px] font-black text-gray-400 mb-1.5 ml-1 uppercase tracking-wider">태그</label>
+                <input type="text" value={tags} onChange={(e) => setTags(e.target.value)} className="w-full px-4 py-3.5 border-2 border-gray-100 rounded-2xl outline-none text-sm" placeholder="누끼, 색보정" />
               </div>
             </div>
           </div>
 
-          {/* 오리지널 블랙 버튼 */}
           <button 
             onClick={() => onSubmit({ title, url, thumbnailUrl, category, tags: tags.split(',').map(t => t.trim()).filter(Boolean) })}
-            className="w-full py-4 bg-black text-white rounded-[20px] font-bold mt-8 hover:bg-gray-800 active:scale-95 transition-all shadow-lg"
+            className="w-full py-4 bg-black text-white rounded-2xl font-bold mt-10 hover:bg-gray-800 active:scale-95 transition-all shadow-lg"
           >
             {submitLabel}
           </button>
