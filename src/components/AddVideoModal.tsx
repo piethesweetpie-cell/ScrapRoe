@@ -1,7 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
 
-const AddVideoModal = ({ open, onClose, categories, initial, onSubmit }: any) => {
+interface AddVideoModalProps {
+  open: boolean;
+  onClose: () => void;
+  categories: string[];
+  initial?: any;
+  onSubmit: (data: any) => void;
+}
+
+const AddVideoModal: React.FC<AddVideoModalProps> = ({ open, onClose, categories, initial, onSubmit }) => {
   const [url, setUrl] = useState('');
   const [title, setTitle] = useState('');
   const [thumbnailUrl, setThumbnailUrl] = useState('');
@@ -10,10 +18,8 @@ const AddVideoModal = ({ open, onClose, categories, initial, onSubmit }: any) =>
   const [isFetching, setIsFetching] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
 
-  // ✅ JSONLink API Key (여기에 키만 넣으세요)
   const JSONLINK_API_KEY = 'pk_7b6c2135e19c2d3e2e6f58bc8c3be201a0763f01';
 
-  // 1. 초기화
   useEffect(() => {
     if (open) {
       setUrl(initial?.url || '');
@@ -25,7 +31,6 @@ const AddVideoModal = ({ open, onClose, categories, initial, onSubmit }: any) =>
     }
   }, [open, initial, categories]);
 
-  // 2. 🔥 메타데이터 추출 엔진 (유튜브: noembed / 인스타: JSONLink + 캐시)
   useEffect(() => {
     if (!url || initial || !open) return;
 
@@ -36,7 +41,7 @@ const AddVideoModal = ({ open, onClose, categories, initial, onSubmit }: any) =>
       const inputUrl = url.trim();
 
       try {
-        // ✅ 유튜브 처리 (안정적)
+        // ✅ 유튜브 처리
         if (inputUrl.includes('youtube.com') || inputUrl.includes('youtu.be')) {
           const videoId =
             inputUrl.split('v=')[1]?.split('&')[0] ||
@@ -51,12 +56,9 @@ const AddVideoModal = ({ open, onClose, categories, initial, onSubmit }: any) =>
             if (res.ok) {
               const data = await res.json();
               if (data.title) setTitle(data.title);
-            } else {
-              setErrorMsg(`유튜브 제목 추출 실패 (${res.status})`);
             }
           } catch (e) {
             console.error('유튜브 추출 실패', e);
-            setErrorMsg('유튜브 제목 추출 실패');
           }
 
           setIsFetching(false);
@@ -68,7 +70,6 @@ const AddVideoModal = ({ open, onClose, categories, initial, onSubmit }: any) =>
           const cleanUrl = inputUrl.split('?')[0].replace(/\/$/, '');
           const cacheKey = `meta:${cleanUrl}`;
 
-          // [캐시 확인]
           const cached = localStorage.getItem(cacheKey);
           if (cached) {
             try {
@@ -77,24 +78,12 @@ const AddVideoModal = ({ open, onClose, categories, initial, onSubmit }: any) =>
               setThumbnailUrl(parsed.thumbnailUrl || '');
               setIsFetching(false);
               return;
-            } catch (e) {
-              // 캐시가 깨졌으면 무시하고 계속 진행
-            }
-          }
-
-          // 키 없으면 여기서 바로 안내
-          if (!JSONLINK_API_KEY || JSONLINK_API_KEY === '키복사할곳') {
-            setErrorMsg('JSONLink API 키가 필요합니다. 코드의 "키복사할곳"에 붙여넣어 주세요.');
-            setTitle('');
-            setThumbnailUrl('');
-            setIsFetching(false);
-            return;
+            } catch (e) {}
           }
 
           setTitle('정보를 불러오는 중입니다...');
 
           try {
-            // 🚀 JSONLink API (키 포함)
             const res1 = await fetch(
               `https://jsonlink.io/api/extract?api_key=${encodeURIComponent(JSONLINK_API_KEY)}&url=${encodeURIComponent(cleanUrl)}`
             );
@@ -103,28 +92,36 @@ const AddVideoModal = ({ open, onClose, categories, initial, onSubmit }: any) =>
               throw new Error(`JSONLink 실패 (${res1.status})`);
             }
 
-const data1 = await res1.json();
+            const data1 = await res1.json();
+            
+            // 🔥 제목(Title) 추출 초강화 로직: description(본문) 탐색
+            let extractedTitle =
+              data1?.description ||
+              data1?.meta?.description ||
+              data1?.og?.description ||
+              data1?.title ||
+              data1?.meta?.title ||
+              data1?.og?.title ||
+              '';
 
-// ✅ 제목 폴백 강화 (인스타에서 title 비는 케이스 대응)
-const fetchedTitle =
-  data1?.title ||
-  data1?.meta?.title ||
-  data1?.og?.title ||
-  data1?.open_graph?.title ||
-  data1?.twitter?.title ||
-  data1?.description ||              // 타이틀이 없으면 설명이라도
-  data1?.meta?.description ||
-  'Instagram Video';
+            const junkPhrases = ['Instagram', 'Instagram photo/video', 'Create an account', 'Log in', 'Welcome back'];
+            if (junkPhrases.some(phrase => extractedTitle.includes(phrase)) && extractedTitle.length < 100) {
+              extractedTitle = ''; 
+            }
 
-// ✅ 썸네일 폴백 강화
-const fetchedThumb =
-  (Array.isArray(data1?.images) && data1.images.length > 0 ? data1.images[0] : '') ||
-  data1?.image ||
-  data1?.meta?.image ||
-  data1?.og?.image ||
-  data1?.open_graph?.image ||
-  data1?.twitter?.image ||
-  '';
+            if (extractedTitle.length > 40) {
+              extractedTitle = extractedTitle.substring(0, 40) + '...';
+            }
+
+            const fetchedTitle = extractedTitle.trim() || 'Instagram Video';
+
+            const fetchedThumb =
+              (Array.isArray(data1?.images) && data1.images.length > 0 ? data1.images[0] : '') ||
+              data1?.image ||
+              data1?.meta?.image ||
+              data1?.og?.image ||
+              data1?.twitter?.image ||
+              '';
 
             setTitle(fetchedTitle);
             setThumbnailUrl(fetchedThumb);
@@ -135,17 +132,14 @@ const fetchedThumb =
             );
           } catch (err1: any) {
             console.error('인스타 추출 실패:', err1);
-            setErrorMsg('자동 추출 실패: 인스타가 차단했거나 JSONLink 제한에 걸렸습니다.');
+            setErrorMsg('자동 추출 실패: 직접 입력해주세요.');
             setTitle('');
-            setThumbnailUrl('');
           } finally {
             setIsFetching(false);
           }
-
           return;
         }
 
-        // ✅ 기타 링크는 자동 추출 안 함 (원하면 여기서 확장)
         setIsFetching(false);
       } catch (e) {
         console.error('추출 실패:', e);
@@ -154,7 +148,6 @@ const fetchedThumb =
       }
     };
 
-    // 🛑 디바운스: 입력 멈춘 뒤 0.8초 후 1회 실행
     const timer = setTimeout(fetchMetadata, 800);
     return () => clearTimeout(timer);
   }, [url, initial, open]);
@@ -209,7 +202,7 @@ const fetchedThumb =
                     src={thumbnailUrl}
                     className="w-full h-full object-cover"
                     alt=""
-                    onError={(e) => (e.currentTarget.style.display = 'none')}
+                    onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-[10px] text-gray-300 font-bold uppercase">

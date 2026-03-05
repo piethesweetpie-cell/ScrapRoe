@@ -15,7 +15,6 @@ function App() {
   const [searchQuery, setSearchQuery] = useState('');
   const [isCategoryEditMode, setIsCategoryEditMode] = useState(false);
   
-  // 🔥 핵심: 모달을 하나로 통합해서 관리합니다.
   const [modal, setModal] = useState<{open: boolean, initial: any}>({ open: false, initial: null });
 
   const fetchVideos = async () => {
@@ -68,7 +67,6 @@ function App() {
         </Masonry>
       </div>
 
-      {/* 🔥 모달은 여기서 단 한 번만 선언합니다. */}
       <AddVideoModal 
         open={modal.open} 
         onClose={() => setModal({ open: false, initial: null })} 
