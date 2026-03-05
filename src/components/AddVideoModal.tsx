@@ -103,13 +103,28 @@ const AddVideoModal = ({ open, onClose, categories, initial, onSubmit }: any) =>
               throw new Error(`JSONLink 실패 (${res1.status})`);
             }
 
-            const data1 = await res1.json();
+const data1 = await res1.json();
 
-            const fetchedTitle = data1.title || 'Instagram Video';
-            const fetchedThumb =
-              (data1.images && Array.isArray(data1.images) && data1.images.length > 0)
-                ? data1.images[0]
-                : '';
+// ✅ 제목 폴백 강화 (인스타에서 title 비는 케이스 대응)
+const fetchedTitle =
+  data1?.title ||
+  data1?.meta?.title ||
+  data1?.og?.title ||
+  data1?.open_graph?.title ||
+  data1?.twitter?.title ||
+  data1?.description ||              // 타이틀이 없으면 설명이라도
+  data1?.meta?.description ||
+  'Instagram Video';
+
+// ✅ 썸네일 폴백 강화
+const fetchedThumb =
+  (Array.isArray(data1?.images) && data1.images.length > 0 ? data1.images[0] : '') ||
+  data1?.image ||
+  data1?.meta?.image ||
+  data1?.og?.image ||
+  data1?.open_graph?.image ||
+  data1?.twitter?.image ||
+  '';
 
             setTitle(fetchedTitle);
             setThumbnailUrl(fetchedThumb);
