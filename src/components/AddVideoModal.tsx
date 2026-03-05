@@ -7,40 +7,61 @@ const AddVideoModal = ({ open, onClose, categories, initial, onSubmit }: any) =>
   const [thumbnailUrl, setThumbnailUrl] = useState('');
   const [category, setCategory] = useState('');
   const [tags, setTags] = useState('');
+  const [isFetching, setIsFetching] = useState(false); // 로딩 피드백용 상태
 
   useEffect(() => {
     if (open) {
-      setUrl(initial?.url || ''); setTitle(initial?.title || '');
-      setThumbnailUrl(initial?.thumbnailUrl || ''); setCategory(initial?.category || categories[0] || '');
+      setUrl(initial?.url || '');
+      setTitle(initial?.title || '');
+      setThumbnailUrl(initial?.thumbnailUrl || initial?.thumbnail_url || '');
+      setCategory(initial?.category || categories[0] || '');
       setTags(initial?.tags ? initial.tags.join(', ') : '');
     }
   }, [open, initial, categories]);
 
-  // 🔥 유튜브 제목 & 썸네일 자동 추출 로직
+  // 🔥 [핵심] 인스타그램 차단 우회 및 메타데이터 자동 추출 엔진
   useEffect(() => {
     if (!url || initial || !open) return;
-    
+
     const fetchMetadata = async () => {
-      // 유튜브 처리
-      if (url.includes('youtube.com') || url.includes('youtu.be')) {
-        const videoId = url.split('v=')[1]?.split('&')[0] || url.split('/').pop()?.split('?')[0];
-        if (videoId) {
-          setThumbnailUrl(`https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`);
-          try {
+      setIsFetching(true);
+      try {
+        // 1. 유튜브 처리 (가장 안전한 hqdefault 사용)
+        if (url.includes('youtube.com') || url.includes('youtu.be')) {
+          const videoId = url.split('v=')[1]?.split('&')[0] || url.split('/').pop()?.split('?')[0];
+          if (videoId) {
+            setThumbnailUrl(`https://img.youtube.com/vi/${videoId}/hqdefault.jpg`);
             const res = await fetch(`https://noembed.com/embed?url=${encodeURIComponent(url)}`);
             const data = await res.json();
             if (data.title) setTitle(data.title);
-          } catch (e) { console.error("제목 추출 실패"); }
+          }
+        } 
+        // 2. 인스타그램 처리 (막힌 방식을 버리고 Microlink API로 우회 추출)
+        else if (url.includes('instagram.com')) {
+          setTitle('정보를 불러오는 중입니다...');
+          const res = await fetch(`https://api.microlink.io?url=${encodeURIComponent(url)}`);
+          const data = await res.json();
+
+          if (data.status === 'success') {
+            if (data.data.title) setTitle(data.data.title);
+            if (data.data.image?.url) setThumbnailUrl(data.data.image.url);
+            else setThumbnailUrl(''); // 이미지가 막혀있을 경우 빈칸 유지
+          } else {
+            setTitle('Instagram Video');
+            setThumbnailUrl('');
+          }
         }
-      } 
-      // 인스타그램 처리 (썸네일만)
-      else if (url.includes('instagram.com')) {
-        const cleanUrl = url.split('?')[0].replace(/\/$/, "");
-        setThumbnailUrl(`${cleanUrl}/media/?size=l`);
-        setTitle('Instagram Video');
+      } catch (e) {
+        console.error("추출 실패:", e);
+        if (url.includes('instagram.com')) setTitle('Instagram Video');
+      } finally {
+        setIsFetching(false);
       }
     };
-    fetchMetadata();
+
+    // 타이핑 중 중복 호출을 막기 위해 0.6초 딜레이
+    const timer = setTimeout(() => fetchMetadata(), 600);
+    return () => clearTimeout(timer);
   }, [url, initial, open]);
 
   if (!open) return null;
@@ -58,25 +79,30 @@ const AddVideoModal = ({ open, onClose, categories, initial, onSubmit }: any) =>
         <div className="space-y-6">
           <div>
             <label className="block text-[11px] font-black text-pink-400 mb-1.5 ml-1 uppercase tracking-wider">원본 URL</label>
-            <input type="text" value={url} onChange={(e) => setUrl(e.target.value)} className="w-full px-5 py-3.5 border-2 border-gray-100 rounded-2xl focus:border-black outline-none text-sm transition-all" placeholder="https://..." />
+            <input type="text" value={url} onChange={(e) => setUrl(e.target.value)} className="w-full px-5 py-3.5 border-2 border-gray-100 rounded-2xl focus:border-black outline-none text-sm transition-all" placeholder="인스타 릴스나 유튜브 주소 붙여넣기" />
           </div>
 
           <div>
-            <label className="block text-[11px] font-black text-gray-400 mb-1.5 ml-1 uppercase tracking-wider">제목</label>
+            <label className="block text-[11px] font-black text-gray-400 mb-1.5 ml-1 uppercase tracking-wider">
+              제목 {isFetching && <span className="text-pink-400 lowercase font-normal ml-2 animate-pulse">불러오는 중...</span>}
+            </label>
             <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} className="w-full px-5 py-3.5 border-2 border-gray-100 rounded-2xl focus:border-black outline-none text-sm transition-all" />
           </div>
 
           <div>
             <label className="block text-[11px] font-black text-gray-400 mb-1.5 ml-1 uppercase tracking-wider">썸네일 미리보기</label>
             <div className="flex gap-4 items-center">
-              <div className="w-20 h-20 bg-gray-50 rounded-2xl overflow-hidden border-2 border-gray-100 flex-shrink-0">
+              <div className="w-20 h-20 bg-gray-50 rounded-2xl overflow-hidden border-2 border-gray-100 flex-shrink-0 relative">
                 {thumbnailUrl ? (
-                  <img src={thumbnailUrl} className="w-full h-full object-cover" alt="" onError={(e) => e.currentTarget.src = 'https://www.instagram.com/static/images/ico/favicon-192.png/b306addcc586.png'} />
+                  /* 깨진 이미지가 나올 경우 숨김 처리하여 엑스박스 방지 */
+                  <img src={thumbnailUrl} className="w-full h-full object-cover" alt="" onError={(e) => e.currentTarget.style.display = 'none'} />
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center text-[10px] text-gray-300 font-bold uppercase">No Img</div>
+                  <div className="w-full h-full flex items-center justify-center text-[10px] text-gray-300 font-bold uppercase">
+                    {isFetching ? '로딩중' : 'No Img'}
+                  </div>
                 )}
               </div>
-              <input type="text" value={thumbnailUrl} onChange={(e) => setThumbnailUrl(e.target.value)} className="flex-1 px-4 py-3 border-2 border-gray-100 rounded-xl text-[10px] text-gray-400 outline-none" placeholder="썸네일 주소" />
+              <input type="text" value={thumbnailUrl} onChange={(e) => setThumbnailUrl(e.target.value)} className="flex-1 px-4 py-3 border-2 border-gray-100 rounded-xl text-[10px] text-gray-400 outline-none" placeholder="자동으로 추출됩니다" />
             </div>
           </div>
 
@@ -89,7 +115,7 @@ const AddVideoModal = ({ open, onClose, categories, initial, onSubmit }: any) =>
             </div>
             <div>
               <label className="block text-[11px] font-black text-gray-400 mb-1.5 ml-1 uppercase tracking-wider">태그</label>
-              <input type="text" value={tags} onChange={(e) => setTags(e.target.value)} className="w-full px-4 py-3.5 border-2 border-gray-100 rounded-2xl outline-none text-sm" placeholder="누끼, AI" />
+              <input type="text" value={tags} onChange={(e) => setTags(e.target.value)} className="w-full px-4 py-3.5 border-2 border-gray-100 rounded-2xl outline-none text-sm" placeholder="예: 누끼, AI" />
             </div>
           </div>
         </div>
