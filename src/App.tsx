@@ -27,7 +27,7 @@ function App() {
     typeof window !== 'undefined' && window.innerWidth < 768 ? 'small' : 'large'
   ); 
 
-  // 🔥 기기 간 동기화: DB에서 직접 데이터를 가져와 카테고리 목록 생성
+  // 🔥 기기 간 동기화 핵심: DB에서 직접 데이터를 가져와 카테고리 목록을 실시간 생성합니다.
   const fetchVideos = async () => {
     const { data, error } = await supabase.from('videos').select('*').order('created_at', { ascending: false });
     if (!error && data) {
@@ -79,7 +79,8 @@ function App() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#fff0f5] via-white to-[#f0f8ff] text-black w-full overflow-x-hidden">
       <div className="max-w-[1920px] mx-auto px-4 sm:px-8 pt-5 pb-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-        <div onClick={() => { setSelectedCategory('All'); setSearchQuery(''); }} className="flex items-center gap-4 cursor-pointer">
+        {/* 로고 클릭 시 초기화 */}
+        <div onClick={() => { setSelectedCategory('All'); setSearchQuery(''); setCurrentPage(1); }} className="flex items-center gap-4 cursor-pointer">
           <img src={logoImg} alt="Logo" className="h-10 md:h-16 w-auto" />
           <h1 className="text-4xl md:text-7xl font-black tracking-tighter">SCRAP ROE</h1>
         </div>
@@ -94,8 +95,9 @@ function App() {
           <div className="relative flex-1 h-11 md:h-12">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4 md:w-5 md:h-5" />
             <input type="text" placeholder="검색..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full h-full pl-10 md:pl-12 pr-10 border-2 border-black rounded-full outline-none text-sm md:text-base focus:border-[#FF66C4] transition-colors" />
-            {searchQuery && <button onClick={() => setSearchQuery('')} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-black transition-colors">✕</button>}
+            {searchQuery && <button onClick={() => setSearchQuery('')} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-black transition-colors text-xs">✕</button>}
           </div>
+          {/* 크게/작게 토글 */}
           <div className="flex border-2 border-black rounded-full p-1 h-11 md:h-12 bg-white shrink-0">
             <button onClick={() => { setViewMode('large'); setCurrentPage(1); }} className={`px-3 md:px-5 rounded-full text-[10px] md:text-xs font-bold transition-all ${viewMode === 'large' ? 'bg-[#FF66C4] text-white shadow-sm' : 'text-gray-500 hover:text-black'}`}>■ 크게</button>
             <button onClick={() => { setViewMode('small'); setCurrentPage(1); }} className={`px-3 md:px-5 rounded-full text-[10px] md:text-xs font-bold transition-all ${viewMode === 'small' ? 'bg-[#FF66C4] text-white shadow-sm' : 'text-gray-500 hover:text-black'}`}>▦ 작게</button>
@@ -107,7 +109,7 @@ function App() {
           {categories.map(cat => (
             <button key={cat} onClick={() => isCategoryEditMode ? handleEditCategory(cat) : setSelectedCategory(cat)} className={`relative px-4 py-1.5 rounded-full font-bold border-2 text-sm transition-all ${selectedCategory === cat ? 'bg-pink-100 border-pink-200 text-pink-600' : 'bg-white border-gray-300 hover:bg-gray-50'} ${isCategoryEditMode ? 'border-dashed border-pink-400 pr-9 animate-pulse' : ''}`}>
               {cat}
-              {isCategoryEditMode && <span onClick={(e) => handleDeleteCategory(e, cat)} className="absolute right-2 top-1/2 -translate-y-1/2 w-5 h-5 flex items-center justify-center bg-red-100 text-red-500 rounded-full text-[10px] hover:bg-red-500 hover:text-white transition-colors">✕</span>}
+              {isCategoryEditMode && <span onClick={(e) => handleDeleteCategory(e, cat)} className="absolute right-2 top-1/2 -translate-y-1/2 w-5 h-5 flex items-center justify-center bg-red-100 text-red-500 rounded-full text-[10px] hover:bg-red-500 hover:text-white transition-colors text-xs">✕</span>}
             </button>
           ))}
         </div>
@@ -118,38 +120,48 @@ function App() {
           ))}
         </Masonry>
 
-        {/* 🔥 사라졌던 페이지네이션 복구 완료! */}
+        {/* 페이지네이션 복구 */}
         {totalPages > 1 && (
           <div className="flex justify-center items-center gap-2 mt-12 pb-12">
-            <button 
-              onClick={() => { setCurrentPage(p => Math.max(1, p - 1)); window.scrollTo({ top: 0, behavior: 'smooth' }); }} 
-              disabled={currentPage === 1} 
-              className="px-4 py-2 border-2 border-black rounded-full text-sm font-bold disabled:opacity-20 hover:bg-gray-100 transition-all"
-            >
-              &lt;&lt;
-            </button>
+            <button onClick={() => { setCurrentPage(p => Math.max(1, p - 1)); window.scrollTo({ top: 0, behavior: 'smooth' }); }} disabled={currentPage === 1} className="px-4 py-2 border-2 border-black rounded-full text-sm font-bold disabled:opacity-20 hover:bg-gray-100 transition-all"> &lt;&lt; </button>
             {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
-              <button 
-                key={pageNum} 
-                onClick={() => { setCurrentPage(pageNum); window.scrollTo({ top: 0, behavior: 'smooth' }); }} 
-                className={`w-10 h-10 flex justify-center items-center border-2 rounded-full text-sm font-bold transition-all ${currentPage === pageNum ? 'bg-[#FF66C4] border-[#FF66C4] text-white shadow-md' : 'bg-white border-black text-black hover:bg-pink-50'}`}
-              >
-                {pageNum}
-              </button>
+              <button key={pageNum} onClick={() => { setCurrentPage(pageNum); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className={`w-10 h-10 flex justify-center items-center border-2 rounded-full text-sm font-bold transition-all ${currentPage === pageNum ? 'bg-[#FF66C4] border-[#FF66C4] text-white shadow-md' : 'bg-white border-black text-black hover:bg-pink-50'}`}>{pageNum}</button>
             ))}
-            <button 
-              onClick={() => { setCurrentPage(p => Math.min(totalPages, p + 1)); window.scrollTo({ top: 0, behavior: 'smooth' }); }} 
-              disabled={currentPage === totalPages} 
-              className="px-4 py-2 border-2 border-black rounded-full text-sm font-bold disabled:opacity-20 hover:bg-gray-100 transition-all"
-            >
-              &gt;&gt;
-            </button>
+            <button onClick={() => { setCurrentPage(p => Math.min(totalPages, p + 1)); window.scrollTo({ top: 0, behavior: 'smooth' }); }} disabled={currentPage === totalPages} className="px-4 py-2 border-2 border-black rounded-full text-sm font-bold disabled:opacity-20 hover:bg-gray-100 transition-all"> &gt;&gt; </button>
           </div>
         )}
       </div>
 
-      <AddVideoModal open={isAddOpen} onClose={() => setIsAddOpen(false)} categories={categories} onSubmit={async (p) => { await supabase.from('videos').insert([{ ...p, thumbnail_url: p.thumbnailUrl }]); fetchVideos(); setIsAddOpen(false); }} />
-      <AddVideoModal open={isEditOpen} onClose={() => { setIsEditOpen(false); setEditing(null); }} categories={categories} initial={editing ? { title: editing.title, url: editing.url, thumbnailUrl: editing.thumbnail_url, category: editing.category, tags: editing.tags } : null} onSubmit={async (p) => { if (editing) { await supabase.from('videos').update({ ...p, thumbnail_url: p.thumbnailUrl }).eq('id', editing.id); fetchVideos(); setIsEditOpen(false); } }} />
+      {/* 🔥 [Add] DB 등록 로직 강화: 이름표(thumbnail_url)를 확실하게 매칭합니다. */}
+      <AddVideoModal 
+        open={isAddOpen} 
+        onClose={() => setIsAddOpen(false)} 
+        categories={categories} 
+        onSubmit={async (p) => { 
+          const { error } = await supabase.from('videos').insert([{ 
+            title: p.title, url: p.url, thumbnail_url: p.thumbnailUrl, category: p.category, tags: p.tags 
+          }]); 
+          if (error) alert('등록 실패: ' + error.message);
+          else { fetchVideos(); setIsAddOpen(false); }
+        }} 
+      />
+
+      {/* 🔥 [Edit] 수정 로직 강화 */}
+      <AddVideoModal 
+        open={isEditOpen} 
+        onClose={() => { setIsEditOpen(false); setEditing(null); }} 
+        categories={categories} 
+        initial={editing ? { title: editing.title, url: editing.url, thumbnailUrl: editing.thumbnail_url, category: editing.category, tags: editing.tags } : null} 
+        submitLabel="수정 완료"
+        onSubmit={async (p) => { 
+          if (!editing) return;
+          const { error } = await supabase.from('videos').update({ 
+            title: p.title, url: p.url, thumbnail_url: p.thumbnailUrl, category: p.category, tags: p.tags 
+          }).eq('id', editing.id);
+          if (error) alert('수정 실패: ' + error.message);
+          else { fetchVideos(); setIsEditOpen(false); setEditing(null); }
+        }} 
+      />
     </div>
   );
 }
