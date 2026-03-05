@@ -15,7 +15,7 @@ const AddVideoModal: React.FC<AddVideoModalProps> = ({
   const [category, setCategory] = useState('');
   const [tags, setTags] = useState('');
 
-  // 1. 모달 열릴 때 초기화
+  // 모달 열릴 때 초기화 (중복 방지)
   useEffect(() => {
     if (open) {
       if (initial) {
@@ -28,7 +28,7 @@ const AddVideoModal: React.FC<AddVideoModalProps> = ({
     }
   }, [open, initial, categories]);
 
-  // 2. 썸네일 및 제목 자동 추출 로직
+  // 썸네일 및 제목 추출 엔진
   useEffect(() => {
     const fetchMetadata = async () => {
       if (!url || initial || !open) return;
@@ -41,11 +41,12 @@ const AddVideoModal: React.FC<AddVideoModalProps> = ({
             const res = await fetch(`https://noembed.com/embed?url=${encodeURIComponent(url)}`);
             const data = await res.json();
             if (data.title) setTitle(data.title);
-          } catch (e) { console.error(e); }
+          } catch (e) { console.error("유튜브 제목 추출 실패"); }
         }
       } 
       else if (url.includes('instagram.com')) {
         const cleanUrl = url.split('?')[0].replace(/\/$/, "");
+        // 인스타그램은 제목 자동 추출이 안 되므로 기본값만 넣습니다.
         setThumbnailUrl(`${cleanUrl}/media/?size=l`);
         setTitle('Instagram Video'); 
       }
@@ -71,12 +72,10 @@ const AddVideoModal: React.FC<AddVideoModalProps> = ({
               <label className="block text-[11px] font-black text-pink-400 mb-1.5 ml-1 uppercase tracking-wider">원본 URL</label>
               <input type="text" value={url} onChange={(e) => setUrl(e.target.value)} className="w-full px-5 py-3.5 border-2 border-gray-100 rounded-2xl focus:border-black outline-none text-sm" placeholder="https://..." />
             </div>
-
             <div>
               <label className="block text-[11px] font-black text-gray-400 mb-1.5 ml-1 uppercase tracking-wider">제목</label>
-              <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} className="w-full px-5 py-3.5 border-2 border-gray-100 rounded-2xl focus:border-black outline-none text-sm" />
+              <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} className="w-full px-5 py-3.5 border-2 border-gray-100 rounded-2xl focus:border-black outline-none text-sm" placeholder="제목을 입력하세요" />
             </div>
-
             <div>
               <label className="block text-[11px] font-black text-gray-400 mb-1.5 ml-1 uppercase tracking-wider">썸네일 이미지</label>
               <div className="flex gap-4 items-center">
@@ -90,7 +89,6 @@ const AddVideoModal: React.FC<AddVideoModalProps> = ({
                 <input type="text" value={thumbnailUrl} onChange={(e) => setThumbnailUrl(e.target.value)} className="flex-1 px-4 py-3 border-2 border-gray-100 rounded-xl text-[10px] text-gray-400 outline-none" />
               </div>
             </div>
-
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block text-[11px] font-black text-gray-400 mb-1.5 ml-1 uppercase tracking-wider">카테고리</label>
@@ -100,14 +98,14 @@ const AddVideoModal: React.FC<AddVideoModalProps> = ({
               </div>
               <div>
                 <label className="block text-[11px] font-black text-gray-400 mb-1.5 ml-1 uppercase tracking-wider">태그</label>
-                <input type="text" value={tags} onChange={(e) => setTags(e.target.value)} className="w-full px-4 py-3.5 border-2 border-gray-100 rounded-2xl outline-none text-sm" placeholder="누끼, AI" />
+                <input type="text" value={tags} onChange={(e) => setTags(e.target.value)} className="w-full px-4 py-3.5 border-2 border-gray-100 rounded-2xl outline-none text-sm" />
               </div>
             </div>
           </div>
 
           <button 
             onClick={() => onSubmit({ title, url, thumbnailUrl, category, tags: tags.split(',').map(t => t.trim()).filter(Boolean) })}
-            className="w-full py-4 bg-black text-white rounded-2xl font-bold mt-10 hover:bg-gray-800 active:scale-95 transition-all shadow-lg"
+            className="w-full py-4 bg-black text-white rounded-2xl font-bold mt-10 hover:bg-gray-800 transition-all shadow-lg active:scale-95"
           >
             {submitLabel}
           </button>
