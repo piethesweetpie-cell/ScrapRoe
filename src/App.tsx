@@ -98,15 +98,6 @@ function App() {
               <button onClick={() => setIsCategoryEditMode(!isCategoryEditMode)} className={`px-5 py-2 border-2 border-black rounded-full font-bold transition-all ${isCategoryEditMode ? 'bg-black text-white' : 'hover:bg-gray-100'}`}>Edit</button>
             </>
           )}
-          {user ? (
-            <button onClick={() => signOut()} className="p-2 rounded-full border-2 border-gray-300 hover:border-gray-400 transition-all" title={user.email ?? ''}>
-              <LogOut className="w-4 h-4 text-gray-500" />
-            </button>
-          ) : (
-            <button onClick={() => setLoginModalOpen(true)} className="p-2 rounded-full border-2 border-gray-300 hover:border-gray-400 transition-all">
-              <LogIn className="w-4 h-4 text-gray-500" />
-            </button>
-          )}
         </div>
       </div>
 
@@ -147,16 +138,29 @@ function App() {
           ))}
         </Masonry>
 
-        {/* 🔥 6. 하단 페이지네이션 (<< 1 2 3 >>) 복구 */}
-        {totalPages > 1 && (
-          <div className="flex justify-center items-center gap-2 mt-12 pb-12">
-            <button onClick={() => { setCurrentPage(p => Math.max(1, p - 1)); window.scrollTo({ top: 0, behavior: 'smooth' }); }} disabled={currentPage === 1} className="px-4 py-2 border-2 border-black rounded-full text-sm font-bold disabled:opacity-20 hover:bg-gray-100 transition-all"> &lt;&lt; </button>
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
-              <button key={pageNum} onClick={() => { setCurrentPage(pageNum); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className={`w-10 h-10 flex justify-center items-center border-2 rounded-full text-sm font-bold transition-all ${currentPage === pageNum ? 'bg-[#FF66C4] border-[#FF66C4] text-white shadow-md' : 'bg-white border-black text-black hover:bg-pink-50'}`}>{pageNum}</button>
-            ))}
-            <button onClick={() => { setCurrentPage(p => Math.min(totalPages, p + 1)); window.scrollTo({ top: 0, behavior: 'smooth' }); }} disabled={currentPage === totalPages} className="px-4 py-2 border-2 border-black rounded-full text-sm font-bold disabled:opacity-20 hover:bg-gray-100 transition-all"> &gt;&gt; </button>
+        {/* 하단 페이지네이션 + 로그인 버튼 */}
+        <div className="flex justify-center items-center gap-2 mt-12 pb-12 relative">
+          {totalPages > 1 && (
+            <>
+              <button onClick={() => { setCurrentPage(p => Math.max(1, p - 1)); window.scrollTo({ top: 0, behavior: 'smooth' }); }} disabled={currentPage === 1} className="px-4 py-2 border-2 border-black rounded-full text-sm font-bold disabled:opacity-20 hover:bg-gray-100 transition-all"> &lt;&lt; </button>
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
+                <button key={pageNum} onClick={() => { setCurrentPage(pageNum); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className={`w-10 h-10 flex justify-center items-center border-2 rounded-full text-sm font-bold transition-all ${currentPage === pageNum ? 'bg-[#FF66C4] border-[#FF66C4] text-white shadow-md' : 'bg-white border-black text-black hover:bg-pink-50'}`}>{pageNum}</button>
+              ))}
+              <button onClick={() => { setCurrentPage(p => Math.min(totalPages, p + 1)); window.scrollTo({ top: 0, behavior: 'smooth' }); }} disabled={currentPage === totalPages} className="px-4 py-2 border-2 border-black rounded-full text-sm font-bold disabled:opacity-20 hover:bg-gray-100 transition-all"> &gt;&gt; </button>
+            </>
+          )}
+          <div className="absolute right-0">
+            {user ? (
+              <button onClick={() => signOut()} className="p-2 rounded-full border-2 border-gray-300 hover:border-gray-400 transition-all" title={user.email ?? ''}>
+                <LogOut className="w-4 h-4 text-gray-500" />
+              </button>
+            ) : (
+              <button onClick={() => setLoginModalOpen(true)} className="p-2 rounded-full border-2 border-gray-300 hover:border-gray-400 transition-all">
+                <LogIn className="w-4 h-4 text-gray-500" />
+              </button>
+            )}
           </div>
-        )}
+        </div>
       </div>
 
       {loginModalOpen && <LoginModal onClose={() => setLoginModalOpen(false)} />}
