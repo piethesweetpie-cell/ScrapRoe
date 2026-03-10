@@ -31,7 +31,12 @@ export function useAuth() {
     if (error) {
       if (error.message.includes('Invalid login credentials')) {
         const { error: signUpError } = await supabase.auth.signUp({ email, password });
-        if (signUpError) throw new Error(signUpError.message);
+        if (signUpError) {
+          if (signUpError.message.includes('already registered')) {
+            throw new Error('비밀번호가 올바르지 않습니다.');
+          }
+          throw new Error(signUpError.message);
+        }
         const { error: retryError } = await supabase.auth.signInWithPassword({ email, password });
         if (retryError) throw new Error(retryError.message);
       } else {
