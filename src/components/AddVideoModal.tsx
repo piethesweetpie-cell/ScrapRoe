@@ -167,45 +167,45 @@ const AddVideoModal: React.FC<AddVideoModalProps> = ({ open, onClose, categories
 
   return (
     <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-      <div className="bg-white w-full max-w-md rounded-[32px] shadow-2xl p-8 animate-in fade-in zoom-in duration-200">
+      <div className="bg-white w-full max-w-md rounded-2xl shadow-2xl shadow-black/10 p-8 animate-in fade-in zoom-in duration-200">
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-xl font-bold flex items-center gap-2">
-            <span className="text-pink-500">🔗</span> {initial ? '레퍼런스 수정' : '새 레퍼런스 추가'}
+          <h2 className="text-xl font-semibold" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+            {initial ? '레퍼런스 수정' : '새 레퍼런스 추가'}
           </h2>
-          <button onClick={onClose} className="text-gray-400 hover:text-black transition-colors">
-            <X className="w-6 h-6" />
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-700 transition-colors duration-200 cursor-pointer">
+            <X className="w-5 h-5" />
           </button>
         </div>
 
         <div className="space-y-4">
           <div>
-            <label className="block text-[11px] font-black text-pink-400 mb-1 uppercase tracking-wider">
+            <label className="block text-[11px] font-semibold text-[#FF66C4] mb-1 uppercase tracking-wider">
               원본 URL {errorMsg && <span className="text-red-500 lowercase font-normal ml-2">{errorMsg}</span>}
             </label>
             <input
               type="text"
               value={url}
               onChange={(e) => setUrl(e.target.value)}
-              className="w-full px-4 py-3 border-2 border-gray-100 rounded-2xl outline-none text-sm focus:border-black transition-all"
+              className="w-full px-4 py-3 border border-gray-200 rounded-xl outline-none text-sm focus:border-[#FF66C4] focus:ring-2 focus:ring-pink-100 transition-all duration-200"
               placeholder="인스타 릴스 주소를 붙여넣으세요"
             />
           </div>
 
           <div>
-            <label className="block text-[11px] font-black text-gray-400 mb-1 uppercase tracking-wider">
+            <label className="block text-[11px] font-semibold text-gray-400 mb-1 uppercase tracking-wider">
               제목 {isFetching && <span className="text-pink-400 lowercase font-normal ml-2 animate-pulse">자동 추출 중...</span>}
             </label>
             <input
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="w-full px-4 py-3 border-2 border-gray-100 rounded-2xl outline-none text-sm transition-all"
+              className="w-full px-4 py-3 border border-gray-200 rounded-xl outline-none text-sm focus:border-[#FF66C4] focus:ring-2 focus:ring-pink-100 transition-all duration-200"
               placeholder="제목이 추출됩니다"
             />
           </div>
 
           <div>
-            <label className="block text-[11px] font-black text-gray-400 mb-1 uppercase tracking-wider">썸네일 이미지</label>
+            <label className="block text-[11px] font-semibold text-gray-400 mb-1 uppercase tracking-wider">썸네일 이미지</label>
             <div className="flex gap-3 items-center">
               <div className="w-16 h-16 bg-gray-50 rounded-2xl overflow-hidden border-2 border-gray-100 flex-shrink-0 relative">
                 {thumbnailUrl ? (
@@ -225,7 +225,7 @@ const AddVideoModal: React.FC<AddVideoModalProps> = ({ open, onClose, categories
                 type="text"
                 value={thumbnailUrl}
                 onChange={(e) => setThumbnailUrl(e.target.value)}
-                className="flex-1 px-4 py-2 border-2 border-gray-100 rounded-xl text-[10px] text-gray-400 outline-none"
+                className="flex-1 px-4 py-2 border border-gray-200 rounded-xl text-[10px] text-gray-400 outline-none focus:border-[#FF66C4] transition-all duration-200"
                 placeholder="이미지 주소가 추출됩니다"
               />
             </div>
@@ -233,11 +233,11 @@ const AddVideoModal: React.FC<AddVideoModalProps> = ({ open, onClose, categories
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-[11px] font-black text-gray-400 mb-1 uppercase tracking-wider">카테고리</label>
+              <label className="block text-[11px] font-semibold text-gray-400 mb-1 uppercase tracking-wider">카테고리</label>
               <select
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
-                className="w-full px-4 py-3 border-2 border-gray-100 rounded-2xl outline-none text-sm bg-white appearance-none"
+                className="w-full px-4 py-3 border border-gray-200 rounded-xl outline-none text-sm bg-white appearance-none focus:border-[#FF66C4] focus:ring-2 focus:ring-pink-100 transition-all duration-200 cursor-pointer"
               >
                 {categories.map((c: string) => (
                   <option key={c} value={c}>{c}</option>
@@ -245,12 +245,12 @@ const AddVideoModal: React.FC<AddVideoModalProps> = ({ open, onClose, categories
               </select>
             </div>
             <div>
-              <label className="block text-[11px] font-black text-gray-400 mb-1 uppercase tracking-wider">태그</label>
+              <label className="block text-[11px] font-semibold text-gray-400 mb-1 uppercase tracking-wider">태그</label>
               <input
                 type="text"
                 value={tags}
                 onChange={(e) => setTags(e.target.value)}
-                className="w-full px-4 py-3 border-2 border-gray-100 rounded-2xl outline-none text-sm"
+                className="w-full px-4 py-3 border border-gray-200 rounded-xl outline-none text-sm focus:border-[#FF66C4] focus:ring-2 focus:ring-pink-100 transition-all duration-200"
                 placeholder="예: 누끼, 색보정"
               />
             </div>
@@ -267,7 +267,7 @@ const AddVideoModal: React.FC<AddVideoModalProps> = ({ open, onClose, categories
               tags: tags.split(',').map((t) => t.trim()).filter(Boolean),
             })
           }
-          className="w-full py-4 bg-black text-white rounded-2xl font-bold mt-8 hover:bg-gray-800 active:scale-95 transition-all shadow-lg"
+          className="w-full py-3.5 bg-[#FF66C4] text-white rounded-xl font-semibold mt-8 hover:bg-[#ff4db5] active:scale-[0.98] transition-all duration-200 shadow-lg shadow-pink-200 cursor-pointer"
         >
           저장하기
         </button>
