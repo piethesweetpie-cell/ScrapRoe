@@ -1,16 +1,16 @@
 .masonry-grid {
   display: flex;
-  margin-left: -1rem;
+  margin-left: -1.25rem;
   width: auto;
 }
 
 .masonry-grid_column {
-  padding-left: 1rem;
+  padding-left: 1.25rem;
   background-clip: padding-box;
 }
 
 .masonry-grid_column > div {
-  margin-bottom: 1rem;
+  margin-bottom: 1.25rem;
 }
 
 .scrollbar-hide::-webkit-scrollbar {
