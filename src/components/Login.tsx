@@ -1,66 +1,65 @@
 import { useState } from 'react';
-import { Lock } from 'lucide-react';
+import { useAuth } from '../hooks/useAuth';
 
-interface LoginProps {
-  onLogin: () => void;
+interface LoginModalProps {
+  onClose: () => void;
 }
 
-export default function Login({ onLogin }: LoginProps) {
+export default function LoginModal({ onClose }: LoginModalProps) {
+  const { signIn } = useAuth();
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (password === '1234') {
-      onLogin();
-    } else {
-      setError('비밀번호가 올바르지 않습니다');
-      setPassword('');
+    setError('');
+    setLoading(true);
+    try {
+      await signIn(email, password);
+      onClose();
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : '로그인에 실패했습니다.');
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-950 flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
-        <div className="bg-gray-900 rounded-2xl shadow-2xl p-8 border border-gray-800">
-          <div className="flex flex-col items-center mb-8">
-            <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center mb-4">
-              <Lock className="w-8 h-8 text-white" />
-            </div>
-            <h1 className="text-2xl font-bold text-white mb-2">튜토리얼 스크랩북</h1>
-            <p className="text-gray-400 text-sm">프라이빗 공간에 접속하려면 비밀번호를 입력하세요</p>
-          </div>
-
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => {
-                  setPassword(e.target.value);
-                  setError('');
-                }}
-                placeholder="비밀번호 입력"
-                className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
-                autoFocus
-              />
-              {error && (
-                <p className="mt-2 text-sm text-red-400">{error}</p>
-              )}
-            </div>
-
-            <button
-              type="submit"
-              className="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold py-3 rounded-lg hover:from-blue-600 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl"
-            >
-              접속하기
-            </button>
-          </form>
-
-          <div className="mt-6 text-center">
-            <p className="text-xs text-gray-500">힌트: 비밀번호는 1234입니다</p>
-          </div>
-        </div>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" onClick={onClose}>
+      <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-sm mx-4" onClick={(e) => e.stopPropagation()}>
+        <h2 className="text-xl font-bold mb-6 text-center">관리자 로그인</h2>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="이메일"
+            required
+            autoFocus
+            className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl outline-none focus:border-[#FF66C4] transition-colors text-sm"
+          />
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="비밀번호"
+            required
+            className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl outline-none focus:border-[#FF66C4] transition-colors text-sm"
+          />
+          {error && <p className="text-sm text-red-500">{error}</p>}
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full py-2.5 bg-[#FF66C4] text-white rounded-xl font-bold hover:bg-[#ff4d94] transition-all disabled:opacity-50"
+          >
+            {loading ? '로그인 중...' : '로그인'}
+          </button>
+        </form>
+        <button onClick={onClose} className="w-full mt-3 text-sm text-gray-400 hover:text-gray-600 transition-colors">
+          취소
+        </button>
       </div>
     </div>
   );

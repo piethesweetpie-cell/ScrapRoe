@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
 import Masonry from 'react-masonry-css';
-import { Search, Plus } from 'lucide-react';
+import { Search, Plus, LogIn, LogOut } from 'lucide-react';
 import VideoCard from './components/VideoCard';
 import AddVideoModal from './components/AddVideoModal';
-import { supabase } from './lib/supabaseClient'; 
+import LoginModal from './components/Login';
+import { supabase } from './lib/supabaseClient';
+import { useAuth } from './hooks/useAuth';
 import './masonry.css';
 import logoImg from './assets/ONROE.png';
 
@@ -23,6 +25,8 @@ function App() {
   const [viewMode, setViewMode] = useState<'large' | 'small'>(
     typeof window !== 'undefined' && window.innerWidth < 768 ? 'small' : 'large'
   );
+  const [loginModalOpen, setLoginModalOpen] = useState(false);
+  const { user, isAdmin, signOut } = useAuth();
 
   const fetchVideos = async () => {
     const { data } = await supabase.from('videos').select('*').order('created_at', { ascending: false });
@@ -87,9 +91,22 @@ function App() {
           <img src={logoImg} alt="Logo" className="h-10 md:h-16 w-auto" />
           <h1 className="text-4xl md:text-7xl font-black tracking-tighter">SCRAP ROE</h1>
         </div>
-        <div className="flex gap-2 w-full md:w-auto justify-end">
-          <button onClick={() => setModal({ open: true, initial: null })} className="px-5 py-2 bg-[#FF66C4] text-white rounded-full font-bold shadow-md hover:bg-[#ff4d94] transition-all">Add</button>
-          <button onClick={() => setIsCategoryEditMode(!isCategoryEditMode)} className={`px-5 py-2 border-2 border-black rounded-full font-bold transition-all ${isCategoryEditMode ? 'bg-black text-white' : 'hover:bg-gray-100'}`}>Edit</button>
+        <div className="flex gap-2 w-full md:w-auto justify-end items-center">
+          {isAdmin && (
+            <>
+              <button onClick={() => setModal({ open: true, initial: null })} className="px-5 py-2 bg-[#FF66C4] text-white rounded-full font-bold shadow-md hover:bg-[#ff4d94] transition-all">Add</button>
+              <button onClick={() => setIsCategoryEditMode(!isCategoryEditMode)} className={`px-5 py-2 border-2 border-black rounded-full font-bold transition-all ${isCategoryEditMode ? 'bg-black text-white' : 'hover:bg-gray-100'}`}>Edit</button>
+            </>
+          )}
+          {user ? (
+            <button onClick={() => signOut()} className="p-2 rounded-full border-2 border-gray-300 hover:border-gray-400 transition-all" title={user.email ?? ''}>
+              <LogOut className="w-4 h-4 text-gray-500" />
+            </button>
+          ) : (
+            <button onClick={() => setLoginModalOpen(true)} className="p-2 rounded-full border-2 border-gray-300 hover:border-gray-400 transition-all">
+              <LogIn className="w-4 h-4 text-gray-500" />
+            </button>
+          )}
         </div>
       </div>
 
@@ -126,7 +143,7 @@ function App() {
         {/* 🔥 VideoCard에 viewMode 전달하여 모드별로 카드 렌더링되게 복구 */}
         <Masonry breakpointCols={currentBreakpoints} className="masonry-grid" columnClassName="masonry-grid_column">
           {currentVideos.map(video => (
-            <VideoCard key={video.id} {...video} id={video.id} thumbnailUrl={video.thumbnail_url} postUrl={video.url} viewMode={viewMode} onEdit={() => setModal({ open: true, initial: video })} onDelete={async () => { if(confirm('삭제하시겠습니까?')) { await supabase.from('videos').delete().eq('id', video.id); fetchVideos(); } }} onTagClick={setSearchQuery} />
+            <VideoCard key={video.id} {...video} id={video.id} thumbnailUrl={video.thumbnail_url} postUrl={video.url} viewMode={viewMode} isAdmin={isAdmin} onEdit={() => setModal({ open: true, initial: video })} onDelete={async () => { if(confirm('삭제하시겠습니까?')) { await supabase.from('videos').delete().eq('id', video.id); fetchVideos(); } }} onTagClick={setSearchQuery} />
           ))}
         </Masonry>
 
@@ -142,7 +159,9 @@ function App() {
         )}
       </div>
 
-      <AddVideoModal 
+      {loginModalOpen && <LoginModal onClose={() => setLoginModalOpen(false)} />}
+
+      <AddVideoModal
         open={modal.open} 
         onClose={() => setModal({ open: false, initial: null })} 
         categories={categories} 

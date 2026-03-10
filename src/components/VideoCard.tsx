@@ -11,18 +11,20 @@ interface VideoCardProps {
   onEdit: (id: string) => void;
   onDelete: (id: string) => void;
   onTagClick?: (tag: string) => void;
+  isAdmin?: boolean;
 }
 
-const VideoCard: React.FC<VideoCardProps> = ({ 
-  id, 
-  title, 
-  thumbnailUrl, 
-  tags, 
-  postUrl, 
-  viewMode = 'large', 
-  onEdit, 
+const VideoCard: React.FC<VideoCardProps> = ({
+  id,
+  title,
+  thumbnailUrl,
+  tags,
+  postUrl,
+  viewMode = 'large',
+  onEdit,
   onDelete,
-  onTagClick
+  onTagClick,
+  isAdmin = false
 }) => {
   return (
     <div className="group relative bg-white border-2 border-black rounded-3xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 masonry-item mb-4 md:mb-5">
@@ -81,15 +83,17 @@ const VideoCard: React.FC<VideoCardProps> = ({
         )}
       </a>
 
-      {/* 관리 버튼 (PC 작게 보기에서는 호버시에만 등장) */}
-      <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20">
-        <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); onEdit(id); }} className="p-1.5 bg-white/90 text-gray-700 rounded-full hover:bg-white hover:text-black shadow-md backdrop-blur-sm transition-all">
-          <Pencil className="w-3.5 h-3.5" />
-        </button>
-        <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); onDelete(id); }} className="p-1.5 bg-white/90 text-red-500 rounded-full hover:bg-white hover:text-red-600 shadow-md backdrop-blur-sm transition-all">
-          <Trash2 className="w-3.5 h-3.5" />
-        </button>
-      </div>
+      {/* 관리 버튼 - 어드민만 */}
+      {isAdmin && (
+        <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20">
+          <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); onEdit(id); }} className="p-1.5 bg-white/90 text-gray-700 rounded-full hover:bg-white hover:text-black shadow-md backdrop-blur-sm transition-all">
+            <Pencil className="w-3.5 h-3.5" />
+          </button>
+          <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); onDelete(id); }} className="p-1.5 bg-white/90 text-red-500 rounded-full hover:bg-white hover:text-red-600 shadow-md backdrop-blur-sm transition-all">
+            <Trash2 className="w-3.5 h-3.5" />
+          </button>
+        </div>
+      )}
     </div>
   );
 };
