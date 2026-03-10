@@ -27,7 +27,7 @@ const VideoCard: React.FC<VideoCardProps> = ({
   isAdmin = false
 }) => {
   return (
-    <div className="group relative bg-white border-2 border-black rounded-3xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 masonry-item mb-4 md:mb-5">
+    <div className="group relative bg-white border border-gray-100 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl hover:shadow-black/8 transition-all duration-300 masonry-item mb-4 md:mb-5 cursor-pointer">
       
       <a 
         href={postUrl} 
@@ -44,16 +44,16 @@ const VideoCard: React.FC<VideoCardProps> = ({
         
         {/* ✅ [CASE 1] 크게 보기 모드: 모든 기기에서 제목 박스 노출 (4줄) */}
         {viewMode === 'large' && (
-          <div className="absolute inset-x-3 bottom-3 bg-black/60 backdrop-blur-md p-4 rounded-2xl z-10 border border-white/10">
-            <h3 className="text-white text-sm md:text-base font-bold leading-tight line-clamp-4 mb-2 group-hover:text-pink-100 transition-colors">
+          <div className="absolute inset-x-3 bottom-3 bg-black/70 backdrop-blur-md p-4 rounded-xl z-10 border border-white/10">
+            <h3 className="text-white text-sm md:text-base font-semibold leading-snug line-clamp-4 mb-2.5 group-hover:text-pink-100 transition-colors duration-300">
               {title}
             </h3>
             <div className="flex flex-wrap gap-1.5">
               {tags && tags.map(tag => (
-                <button 
-                  key={tag} 
+                <button
+                  key={tag}
                   onClick={(e) => { e.preventDefault(); e.stopPropagation(); if (onTagClick) onTagClick(tag); }}
-                  className="px-2 py-0.5 bg-white/20 hover:bg-[#FF66C4] text-white rounded-full text-[10px] md:text-xs font-medium transition-colors"
+                  className="px-2 py-0.5 bg-white/15 hover:bg-[#FF66C4] text-white/90 hover:text-white rounded-full text-[10px] md:text-xs font-medium transition-all duration-200 cursor-pointer"
                 >
                   #{tag}
                 </button>
