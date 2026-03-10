@@ -85,7 +85,7 @@ function App() {
 
   // 🔥 4. 배경 그라데이션 복구 (bg-gradient-to-br)
   return (
-    <div className="min-h-screen bg-[#FAFAFA] text-black w-full overflow-x-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-[#fff0f5] via-white to-[#f0f8ff] text-black w-full overflow-x-hidden">
       <div className="max-w-[1920px] mx-auto px-4 sm:px-8 pt-6 pb-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border-b border-gray-100">
         <div onClick={() => { setSelectedCategory('All'); setSearchQuery(''); setCurrentPage(1); }} className="flex items-center gap-4 cursor-pointer">
           <img src={logoImg} alt="Logo" className="h-10 md:h-16 w-auto" />

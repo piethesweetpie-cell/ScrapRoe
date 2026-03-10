@@ -27,7 +27,7 @@ const VideoCard: React.FC<VideoCardProps> = ({
   isAdmin = false
 }) => {
   return (
-    <div className="group relative bg-white border border-gray-100 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl hover:shadow-black/8 hover:scale-[1.02] transition-all duration-300 masonry-item mb-4 md:mb-5 cursor-pointer">
+    <div className="group relative bg-white border-2 border-black rounded-3xl overflow-hidden shadow-sm hover:shadow-xl hover:shadow-black/8 hover:scale-[1.02] transition-all duration-300 masonry-item mb-4 md:mb-5 cursor-pointer">
       
       <a 
         href={postUrl} 
