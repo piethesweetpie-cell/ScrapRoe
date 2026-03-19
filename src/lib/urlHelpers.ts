@@ -32,8 +32,8 @@ export function detectSource(url: string): DetectedSource {
     const igHost = host.endsWith('instagram.com');
     if (igHost) {
       const parts = parsed.pathname.split('/').filter(Boolean);
-      // /reel/{code}/
-      const reelIdx = parts.indexOf('reel');
+      // /reel/{code}/ or /reels/{code}/
+      const reelIdx = parts.indexOf('reel') >= 0 ? parts.indexOf('reel') : parts.indexOf('reels');
       if (reelIdx >= 0 && parts[reelIdx + 1]) return { kind: 'instagram_reel', shortcode: parts[reelIdx + 1] };
       // /p/{code}/
       const postIdx = parts.indexOf('p');

@@ -83,9 +83,13 @@ export default function VideoDetailModal({
     // 4) fallback thumbnail
     return (
       <img
-        src={video.thumbnailUrl}
+        src={video.thumbnailUrl ? `https://wsrv.nl/?url=${encodeURIComponent(video.thumbnailUrl)}` : 'https://placehold.co/400x600/2a2a2a/ffffff?text=No+Thumbnail'}
         alt={video.title}
-        className="absolute inset-0 w-full h-full object-cover"
+        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+        referrerPolicy="no-referrer"
+        onError={(e) => {
+          (e.target as HTMLImageElement).src = 'https://placehold.co/400x600/2a2a2a/ffffff?text=No+Thumbnail';
+        }}
       />
     );
   }, [video, source]);

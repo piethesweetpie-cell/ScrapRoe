@@ -14,6 +14,8 @@ interface VideoCardProps {
   isAdmin?: boolean;
 }
 
+import { detectSource, instagramEmbedUrl } from '../lib/urlHelpers';
+
 const VideoCard: React.FC<VideoCardProps> = ({
   id,
   title,
@@ -26,6 +28,8 @@ const VideoCard: React.FC<VideoCardProps> = ({
   onTagClick,
   isAdmin = false
 }) => {
+  const source = detectSource(postUrl);
+
   return (
     <div className="group relative bg-white border-2 border-black rounded-3xl overflow-hidden shadow-sm hover:shadow-xl hover:shadow-black/8 hover:scale-[1.02] transition-all duration-300 masonry-item mb-4 md:mb-5 cursor-pointer">
       
@@ -33,22 +37,43 @@ const VideoCard: React.FC<VideoCardProps> = ({
         href={postUrl} 
         target="_blank" 
         rel="noopener noreferrer" 
-        className="relative aspect-[9/16] w-full overflow-hidden block cursor-pointer"
+        className="relative aspect-[9/16] w-full overflow-hidden block cursor-pointer bg-black"
       >
-        <img 
-          src={thumbnailUrl} 
-          alt={title} 
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-          loading="lazy"
-        />
+        {(source.kind === 'instagram_reel' || source.kind === 'instagram_post') ? (
+          <div className="absolute inset-0 w-full h-full pointer-events-none overflow-hidden">
+            <iframe
+              src={instagramEmbedUrl(source.shortcode, source.kind === 'instagram_reel' ? 'reel' : 'post')}
+              className="absolute w-full"
+              style={{ top: '-60px', height: 'calc(100% + 220px)' }}
+              scrolling="no"
+              frameBorder="0"
+              allowTransparency={true}
+            />
+          </div>
+        ) : (
+          <img 
+            src={thumbnailUrl ? `https://wsrv.nl/?url=${encodeURIComponent(thumbnailUrl)}` : 'https://placehold.co/400x600/2a2a2a/ffffff.png?text=No+Thumbnail'} 
+            alt={title} 
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+            loading="lazy"
+            referrerPolicy="no-referrer"
+            onError={(e) => {
+              const target = e.target as HTMLImageElement;
+              const fallback = 'https://placehold.co/400x600/2a2a2a/ffffff.png?text=No+Thumbnail';
+              if (target.src !== fallback) {
+                target.src = fallback;
+              }
+            }}
+          />
+        )}
         
         {/* ✅ [CASE 1] 크게 보기 모드: 모든 기기에서 제목 박스 노출 (4줄) */}
         {viewMode === 'large' && (
-          <div className="absolute inset-x-3 bottom-3 bg-black/70 backdrop-blur-md p-4 rounded-xl z-10 border border-white/10">
-            <h3 className="text-white text-sm md:text-base font-semibold leading-snug line-clamp-4 mb-2.5 group-hover:text-pink-100 transition-colors duration-300">
+          <div className="absolute inset-x-0 bottom-0 bg-black/90 p-4 z-10 h-[140px] flex flex-col">
+            <h3 className="text-white text-sm md:text-base font-semibold leading-snug line-clamp-3 group-hover:text-pink-100 transition-colors duration-300">
               {title}
             </h3>
-            <div className="flex flex-wrap gap-1.5">
+            <div className="flex flex-wrap gap-1.5 mt-auto">
               {tags && tags.map(tag => (
                 <button
                   key={tag}
@@ -64,11 +89,11 @@ const VideoCard: React.FC<VideoCardProps> = ({
 
         {/* ✅ [CASE 2] 작게 보기 모드: 모바일에서만 제목 박스 노출 (2줄), PC(md)에서는 숨김 */}
         {viewMode === 'small' && (
-          <div className="md:hidden absolute inset-x-2 bottom-2 bg-black/60 backdrop-blur-sm p-2.5 rounded-xl z-10 border border-white/10">
-            <h3 className="text-white text-[11px] font-bold leading-tight line-clamp-2 mb-1">
+          <div className="md:hidden absolute inset-x-0 bottom-0 bg-black/90 p-2 z-10 h-[90px] flex flex-col">
+            <h3 className="text-white text-[11px] font-bold leading-tight line-clamp-2">
               {title}
             </h3>
-            <div className="flex flex-wrap gap-1">
+            <div className="flex flex-wrap gap-1 mt-auto">
               {tags && tags.slice(0, 2).map(tag => (
                 <button 
                   key={tag} 

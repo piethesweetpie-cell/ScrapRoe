@@ -79,7 +79,7 @@ function App() {
     ? { default: 5, 1280: 4, 1024: 3, 768: 2, 640: 1 } 
     : { default: 10, 1280: 8, 1024: 6, 768: 4, 640: 2 };
 
-  const ITEMS_PER_PAGE = viewMode === 'large' ? 40 : 80;
+  const ITEMS_PER_PAGE = viewMode === 'large' ? 30 : 80;
   const totalPages = Math.ceil(filteredVideos.length / ITEMS_PER_PAGE);
   const currentVideos = filteredVideos.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
 

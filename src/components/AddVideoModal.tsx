@@ -210,10 +210,17 @@ const AddVideoModal: React.FC<AddVideoModalProps> = ({ open, onClose, categories
               <div className="w-16 h-16 bg-gray-50 rounded-2xl overflow-hidden border-2 border-gray-100 flex-shrink-0 relative">
                 {thumbnailUrl ? (
                   <img
-                    src={thumbnailUrl}
+                    src={`https://wsrv.nl/?url=${encodeURIComponent(thumbnailUrl)}`}
                     className="w-full h-full object-cover"
                     alt=""
-                    onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                    referrerPolicy="no-referrer"
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement;
+                      const fallback = 'https://placehold.co/400x600/2a2a2a/ffffff.png?text=No+Thumbnail';
+                      if (target.src !== fallback) {
+                        target.src = fallback;
+                      }
+                    }}
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-[10px] text-gray-300 font-bold uppercase">
