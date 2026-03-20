@@ -271,7 +271,9 @@ function App() {
         {/* ── 카테고리 버튼 (FlowRoe 스타일) ── */}
         <div className="mt-8 w-full max-w-[900px]">
           <div className="overflow-x-auto scrollbar-hide">
-            <div className="flex pb-1 justify-center flex-wrap" style={{ gap: '0px' }}>
+            <div className="relative mx-auto flex items-start justify-center" style={{ gap: '30px' }}>
+              {/* 연결선 */}
+              <div className="pointer-events-none absolute left-[44px] right-[44px] top-[38px] h-[3px] -translate-y-1/2 bg-black/[0.07]" />
 
               {/* ALL */}
               <button
