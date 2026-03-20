@@ -1,0 +1,207 @@
+{
+  "version": "1.0.0",
+  "lastScanned": 1773941986710,
+  "projectRoot": "d:\\Program\\scrapbook",
+  "techStack": {
+    "languages": [
+      {
+        "name": "JavaScript/TypeScript",
+        "version": null,
+        "confidence": "high",
+        "markers": [
+          "package.json"
+        ]
+      },
+      {
+        "name": "TypeScript",
+        "version": null,
+        "confidence": "high",
+        "markers": [
+          "tsconfig.json"
+        ]
+      }
+    ],
+    "frameworks": [
+      {
+        "name": "react",
+        "version": "18.3.1",
+        "category": "frontend"
+      },
+      {
+        "name": "react-dom",
+        "version": "18.3.1",
+        "category": "frontend"
+      },
+      {
+        "name": "vite",
+        "version": "5.4.2",
+        "category": "build"
+      }
+    ],
+    "packageManager": "npm",
+    "runtime": null
+  },
+  "build": {
+    "buildCommand": "npm run build",
+    "testCommand": null,
+    "lintCommand": "npm run lint",
+    "devCommand": "npm run dev",
+    "scripts": {
+      "dev": "vite",
+      "build": "vite build",
+      "lint": "eslint .",
+      "preview": "vite preview",
+      "typecheck": "tsc --noEmit -p tsconfig.app.json"
+    }
+  },
+  "conventions": {
+    "namingStyle": null,
+    "importStyle": null,
+    "testPattern": null,
+    "fileOrganization": "type-based"
+  },
+  "structure": {
+    "isMonorepo": false,
+    "workspaces": [],
+    "mainDirectories": [
+      "src"
+    ],
+    "gitBranches": {
+      "defaultBranch": "main",
+      "branchingStrategy": null
+    }
+  },
+  "customNotes": [],
+  "directoryMap": {
+    "design-system": {
+      "path": "design-system",
+      "purpose": null,
+      "fileCount": 0,
+      "lastAccessed": 1773941986681,
+      "keyFiles": []
+    },
+    "dist": {
+      "path": "dist",
+      "purpose": "Distribution/build output",
+      "fileCount": 6,
+      "lastAccessed": 1773941986681,
+      "keyFiles": [
+        "index.html",
+        "manifest.webmanifest",
+        "registerSW.js",
+        "sw.js",
+        "workbox-1d305bb8.js"
+      ]
+    },
+    "src": {
+      "path": "src",
+      "purpose": "Source code",
+      "fileCount": 6,
+      "lastAccessed": 1773941986689,
+      "keyFiles": [
+        "App.tsx",
+        "index.css",
+        "main.tsx",
+        "masonry.css",
+        "preview.js"
+      ]
+    },
+    "supabase": {
+      "path": "supabase",
+      "purpose": null,
+      "fileCount": 0,
+      "lastAccessed": 1773941986690,
+      "keyFiles": []
+    },
+    "dist\\assets": {
+      "path": "dist\\assets",
+      "purpose": "Static assets",
+      "fileCount": 2,
+      "lastAccessed": 1773941986690,
+      "keyFiles": [
+        "index-8sM4Kk-n.js",
+        "index-BJgjrzLM.css"
+      ]
+    },
+    "src\\assets": {
+      "path": "src\\assets",
+      "purpose": "Static assets",
+      "fileCount": 1,
+      "lastAccessed": 1773941986691,
+      "keyFiles": [
+        "ONROE.png"
+      ]
+    },
+    "src\\components": {
+      "path": "src\\components",
+      "purpose": "UI components",
+      "fileCount": 5,
+      "lastAccessed": 1773941986691,
+      "keyFiles": [
+        "AddVideoModal.tsx",
+        "Login.tsx",
+        "VideoCard.tsx"
+      ]
+    },
+    "src\\lib": {
+      "path": "src\\lib",
+      "purpose": "Library code",
+      "fileCount": 4,
+      "lastAccessed": 1773941986691,
+      "keyFiles": [
+        "localVideos.ts",
+        "supabase.ts",
+        "supabaseClient.ts"
+      ]
+    },
+    "src\\pages": {
+      "path": "src\\pages",
+      "purpose": "Page components",
+      "fileCount": 0,
+      "lastAccessed": 1773941986692,
+      "keyFiles": []
+    },
+    "supabase\\migrations": {
+      "path": "supabase\\migrations",
+      "purpose": "Database migrations",
+      "fileCount": 1,
+      "lastAccessed": 1773941986692,
+      "keyFiles": [
+        "20260303052055_create_videos_table.sql"
+      ]
+    }
+  },
+  "hotPaths": [
+    {
+      "path": "src\\components\\VideoCard.tsx",
+      "accessCount": 7,
+      "lastAccessed": 1773946042220,
+      "type": "file"
+    },
+    {
+      "path": "src\\App.tsx",
+      "accessCount": 2,
+      "lastAccessed": 1773944781236,
+      "type": "file"
+    },
+    {
+      "path": "src",
+      "accessCount": 1,
+      "lastAccessed": 1773944647913,
+      "type": "directory"
+    },
+    {
+      "path": "src\\lib\\urlHelpers.ts",
+      "accessCount": 1,
+      "lastAccessed": 1773945503955,
+      "type": "file"
+    },
+    {
+      "path": "src\\components\\AddVideoModal.tsx",
+      "accessCount": 1,
+      "lastAccessed": 1773945837616,
+      "type": "file"
+    }
+  ],
+  "userDirectives": []
+}
