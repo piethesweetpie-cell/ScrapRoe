@@ -16,6 +16,18 @@ import objTorus from './assets/obj-torus.png';
 const INTER = "'Inter', sans-serif";
 const ACCENT = '#605399';
 
+const CATEGORY_ICONS: Record<string, string> = {
+  ALL: 'apps',
+  AI: 'auto_awesome',
+  VIDEO: 'videocam',
+  PHOTOSHOP: 'image',
+  ILLUSTRATOR: 'brush',
+  TYPO: 'title',
+  REFERENCE: 'search',
+  CUTOUT: 'content_cut',
+};
+const getCatIcon = (cat: string) => CATEGORY_ICONS[cat.toUpperCase()] ?? 'folder';
+
 function App() {
   const [videos, setVideos] = useState<any[]>([]);
   const [filteredVideos, setFilteredVideos] = useState<any[]>([]);
@@ -273,7 +285,7 @@ function App() {
           <div className="overflow-x-auto scrollbar-hide">
             <div className="relative mx-auto flex items-start justify-center" style={{ gap: '30px' }}>
               {/* 연결선 */}
-              <div className="pointer-events-none absolute left-[44px] right-[44px] top-[38px] h-[3px] -translate-y-1/2 bg-black/[0.07]" />
+              <div className="pointer-events-none absolute left-[44px] right-[44px] top-[28px] h-[3px] -translate-y-1/2 bg-black/[0.07]" />
 
               {/* ALL */}
               <button
@@ -292,7 +304,7 @@ function App() {
                     transform: hoveredCategory === 'All' ? 'scale(1.08)' : 'scale(1)',
                   }}
                 >
-                  <span style={{ color: '#fff', fontSize: '15px' }}>⦿</span>
+                  <span className="material-symbols-outlined" style={{ color: '#fff', fontSize: '20px', lineHeight: 1 }}>apps</span>
                 </div>
                 <span
                   className="text-[11px] font-semibold tracking-wide whitespace-nowrap transition-colors"
@@ -301,7 +313,7 @@ function App() {
                     fontWeight: selectedCategory === 'All' || hoveredCategory === 'All' ? 700 : 500,
                   }}
                 >
-                  ALL
+                  All
                 </span>
               </button>
 
@@ -327,9 +339,7 @@ function App() {
                         transform: isHovered ? 'scale(1.08)' : 'scale(1)',
                       }}
                     >
-                      <span style={{ color: '#fff', fontSize: '13px', fontWeight: 700 }}>
-                        {cat.slice(0, 1).toUpperCase()}
-                      </span>
+                      <span className="material-symbols-outlined" style={{ color: '#fff', fontSize: '20px', lineHeight: 1 }}>{getCatIcon(cat)}</span>
                     </div>
                     <span
                       className="text-[11px] font-semibold tracking-wide whitespace-nowrap transition-colors"
@@ -338,7 +348,7 @@ function App() {
                         fontWeight: isActive || isHovered ? 700 : 500,
                       }}
                     >
-                      {cat.toUpperCase()}
+                      {cat.charAt(0).toUpperCase() + cat.slice(1).toLowerCase()}
                     </span>
                     {isCategoryEditMode && (
                       <span
