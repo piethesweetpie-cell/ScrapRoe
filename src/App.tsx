@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Masonry from 'react-masonry-css';
 import { Search, Plus, LogIn, LogOut, Lock } from 'lucide-react';
+import { motion, useMotionValue, useTransform, useSpring, useScroll } from 'framer-motion';
 import VideoCard from './components/VideoCard';
 import AddVideoModal from './components/AddVideoModal';
 import LoginModal from './components/Login';
@@ -8,6 +9,9 @@ import { supabase } from './lib/supabaseClient';
 import { useAuth } from './hooks/useAuth';
 import './masonry.css';
 import logoImg from './assets/ONROE.png';
+import objBlob from './assets/obj-blob.png';
+import objDiamond from './assets/obj-diamond.png';
+import objTorus from './assets/obj-torus.png';
 
 const INTER = "'Inter', sans-serif";
 const ACCENT = '#FF66C4';
@@ -27,6 +31,32 @@ function App() {
   const [loginModalOpen, setLoginModalOpen] = useState(false);
   const [hoveredCategory, setHoveredCategory] = useState<string | null>(null);
   const { user, isAdmin, signOut } = useAuth();
+
+  // 보석 애니메이션 - 마우스 패럴랙스
+  const heroRef = useRef<HTMLElement>(null);
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+  const springX = useSpring(mouseX, { damping: 32, stiffness: 80 });
+  useSpring(mouseY, { damping: 32, stiffness: 80 });
+  const { scrollYProgress } = useScroll({ target: heroRef, offset: ['start start', 'end start'] });
+  const smoothScroll = useSpring(scrollYProgress, { damping: 26, stiffness: 130 });
+
+  const blobX = useTransform(springX, [-0.5, 0.5], [-30, 30]);
+  const blobScrollY = useTransform(smoothScroll, [0, 0.5], [0, -500]);
+  const diamondX = useTransform(springX, [-0.5, 0.5], [25, -25]);
+  const diamondScrollY = useTransform(smoothScroll, [0, 0.5], [0, 500]);
+  const torusX = useTransform(springX, [-0.5, 0.5], [-18, 18]);
+  const torusScrollY = useTransform(smoothScroll, [0, 0.5], [0, -380]);
+  const objOpacity = useTransform(smoothScroll, [0, 0.4], [1, 0]);
+  const objScale = useTransform(smoothScroll, [0, 0.5], [1, 0.82]);
+  const rotateLeft = useTransform(smoothScroll, [0, 0.5], [0, -45]);
+  const rotateRight = useTransform(smoothScroll, [0, 0.5], [0, 45]);
+
+  const handleHeroMouseMove = (e: React.MouseEvent<HTMLElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    mouseX.set((e.clientX - rect.left) / rect.width - 0.5);
+    mouseY.set((e.clientY - rect.top) / rect.height - 0.5);
+  };
 
   const fetchVideos = async () => {
     const { data } = await supabase.from('videos').select('*').order('created_at', { ascending: false });
@@ -168,7 +198,40 @@ function App() {
       </div>
 
       {/* ── Hero ── */}
-      <section className="relative flex flex-col items-center justify-center text-center px-6 pt-12 pb-6">
+      <section ref={heroRef} onMouseMove={handleHeroMouseMove} className="relative flex flex-col items-center justify-center text-center px-6 pt-12 pb-6">
+
+        {/* Blob - 좌측 */}
+        <div className="absolute left-[-5%] top-[3%] pointer-events-none z-10 hidden lg:block" style={{ marginTop: '-60px', marginLeft: '-20px' }}>
+          <motion.div initial={{ scale: 1.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ duration: 1.4, delay: 0.05, ease: [0.22, 1, 0.36, 1] }}>
+            <motion.div animate={{ y: [0, -16, 0] }} transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut', delay: 1.6 }}>
+              <motion.div style={{ x: blobX, y: blobScrollY, scale: objScale, opacity: objOpacity, rotateZ: rotateLeft }}>
+                <img src={objBlob} alt="" className="w-[342px] h-auto md:w-[420px]" style={{ filter: 'drop-shadow(0 9px 14px rgba(15,23,42,0.12))' }} draggable={false} />
+              </motion.div>
+            </motion.div>
+          </motion.div>
+        </div>
+
+        {/* Diamond - 우측 상단 */}
+        <div className="absolute right-[-10%] top-[-31%] pointer-events-none z-10 hidden sm:block overflow-hidden" style={{ marginRight: '55px' }}>
+          <motion.div initial={{ scale: 1.7, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ duration: 1.4, delay: 0.14, ease: [0.22, 1, 0.36, 1] }}>
+            <motion.div animate={{ y: [0, -20, 0] }} transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut', delay: 1.6 }}>
+              <motion.div style={{ x: diamondX, y: diamondScrollY, scale: objScale, opacity: objOpacity, rotateZ: rotateRight }}>
+                <img src={objDiamond} alt="" className="w-[268px] h-auto md:w-[340px] lg:w-[389px]" style={{ filter: 'drop-shadow(0 10px 15px rgba(88,28,135,0.14))' }} draggable={false} />
+              </motion.div>
+            </motion.div>
+          </motion.div>
+        </div>
+
+        {/* Torus - 우측 하단 */}
+        <div className="absolute right-[-11%] bottom-[-8%] pointer-events-none z-50 hidden sm:block" style={{ marginRight: '-30px' }}>
+          <motion.div initial={{ scale: 1.6, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ duration: 1.4, delay: 0.24, ease: [0.22, 1, 0.36, 1] }}>
+            <motion.div animate={{ y: [0, 14, 0], rotate: [0, 4, 0] }} transition={{ duration: 9, repeat: Infinity, ease: 'easeInOut', delay: 1.6 }}>
+              <motion.div style={{ x: torusX, y: torusScrollY, rotateZ: rotateLeft, scale: objScale, opacity: objOpacity }}>
+                <img src={objTorus} alt="" className="w-[247px] h-auto md:w-[302px] lg:w-[358px]" style={{ filter: 'drop-shadow(0 11px 16px rgba(30,41,59,0.14))' }} draggable={false} />
+              </motion.div>
+            </motion.div>
+          </motion.div>
+        </div>
         <p className="text-[11px] font-semibold tracking-[0.45em] uppercase text-gray-400 mb-5" style={{ fontFamily: INTER }}>
           Reference &amp; Inspiration Archive
         </p>
