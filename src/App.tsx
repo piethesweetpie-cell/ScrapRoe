@@ -22,7 +22,7 @@ const CATEGORY_ICONS: Record<string, string> = {
   VIDEO: 'videocam',
   PHOTOSHOP: 'image',
   ILLUSTRATOR: 'brush',
-  TYPO: 'title',
+  TYPO: 'font_download',
   REFERENCE: 'search',
   CUTOUT: 'content_cut',
 };
@@ -211,7 +211,7 @@ function App() {
       </div>
 
       {/* ── Hero ── */}
-      <section ref={heroRef} onMouseMove={handleHeroMouseMove} className="relative flex flex-col items-center justify-center text-center px-6 pt-12 pb-6">
+      <section ref={heroRef} onMouseMove={handleHeroMouseMove} className="relative flex items-center justify-center select-none" style={{ minHeight: '50vh', paddingTop: '10px', paddingBottom: '24px' }}>
 
         {/* Blob - 좌측 */}
         <div className="absolute left-[-5%] top-[3%] pointer-events-none z-10 hidden lg:block" style={{ marginTop: '-60px', marginLeft: '-20px' }}>
@@ -245,7 +245,8 @@ function App() {
             </motion.div>
           </motion.div>
         </div>
-        <p className="text-[11px] font-semibold tracking-[0.45em] uppercase text-gray-400 mb-5" style={{ fontFamily: INTER }}>
+        <div className="relative z-20 w-full flex flex-col items-center text-center px-6">
+        <p className="mt-[69px] text-[11px] font-semibold tracking-[0.45em] uppercase text-gray-400 mb-5" style={{ fontFamily: INTER }}>
           Reference &amp; Inspiration Archive
         </p>
 
@@ -261,7 +262,7 @@ function App() {
         </p>
 
         {/* 검색창 */}
-        <div className="mt-8 w-full max-w-[560px]">
+        <div className="mt-8 w-full max-w-[560px] relative -top-[7px]">
           <div className="relative">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
             <input
@@ -281,7 +282,7 @@ function App() {
         </div>
 
         {/* ── 카테고리 버튼 (FlowRoe 스타일) ── */}
-        <div className="mt-8 w-full max-w-[900px]">
+        <div className="mt-8 w-full max-w-[900px] relative -top-[7px]">
           <div className="overflow-x-auto scrollbar-hide">
             <div className="relative mx-auto flex items-start justify-center" style={{ gap: '30px' }}>
               {/* 연결선 */}
@@ -381,6 +382,7 @@ function App() {
             </div>
           </div>
         </div>
+        </div>{/* end hero text wrapper */}
       </section>
 
       {/* ── 콘텐츠 ── */}
