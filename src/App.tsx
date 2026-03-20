@@ -211,7 +211,7 @@ function App() {
       </div>
 
       {/* ── Hero ── */}
-      <section ref={heroRef} onMouseMove={handleHeroMouseMove} className="relative flex items-center justify-center select-none" style={{ minHeight: '580px', paddingTop: '10px', paddingBottom: '24px' }}>
+      <section ref={heroRef} onMouseMove={handleHeroMouseMove} className="relative flex items-center justify-center select-none" style={{ minHeight: '50vh', paddingTop: '10px', paddingBottom: '24px' }}>
 
         {/* Blob - 좌측 */}
         <div className="absolute left-[-5%] top-[3%] pointer-events-none z-10 hidden lg:block" style={{ marginTop: '-60px', marginLeft: '-20px' }}>
@@ -246,7 +246,7 @@ function App() {
           </motion.div>
         </div>
         <div className="relative z-20 w-full flex flex-col items-center text-center px-6">
-        <p className="text-[11px] font-semibold tracking-[0.45em] uppercase text-gray-400 mb-5" style={{ fontFamily: INTER }}>
+        <p className="mt-[69px] text-[11px] font-semibold tracking-[0.45em] uppercase text-gray-400 mb-5" style={{ fontFamily: INTER }}>
           Reference &amp; Inspiration Archive
         </p>
 
