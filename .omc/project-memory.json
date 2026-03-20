@@ -174,14 +174,38 @@
   "hotPaths": [
     {
       "path": "src\\components\\VideoCard.tsx",
-      "accessCount": 7,
-      "lastAccessed": 1773946042220,
+      "accessCount": 11,
+      "lastAccessed": 1773987800438,
       "type": "file"
     },
     {
       "path": "src\\App.tsx",
+      "accessCount": 5,
+      "lastAccessed": 1773985942165,
+      "type": "file"
+    },
+    {
+      "path": "",
+      "accessCount": 3,
+      "lastAccessed": 1773988384745,
+      "type": "directory"
+    },
+    {
+      "path": ".env",
       "accessCount": 2,
-      "lastAccessed": 1773944781236,
+      "lastAccessed": 1773987858405,
+      "type": "file"
+    },
+    {
+      "path": "scripts\\download-thumbnails.mjs",
+      "accessCount": 2,
+      "lastAccessed": 1773988415954,
+      "type": "file"
+    },
+    {
+      "path": "package.json",
+      "accessCount": 2,
+      "lastAccessed": 1773988478177,
       "type": "file"
     },
     {
@@ -200,6 +224,12 @@
       "path": "src\\components\\AddVideoModal.tsx",
       "accessCount": 1,
       "lastAccessed": 1773945837616,
+      "type": "file"
+    },
+    {
+      "path": "public\\fallback.svg",
+      "accessCount": 1,
+      "lastAccessed": 1773987814380,
       "type": "file"
     }
   ],
