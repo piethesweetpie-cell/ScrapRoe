@@ -14,7 +14,7 @@ import objDiamond from './assets/obj-diamond.png';
 import objTorus from './assets/obj-torus.png';
 
 const INTER = "'Inter', sans-serif";
-const ACCENT = '#FF66C4';
+const ACCENT = '#605399';
 
 function App() {
   const [videos, setVideos] = useState<any[]>([]);
@@ -176,10 +176,11 @@ function App() {
           <div className="flex gap-2 items-center">
             <button
               onClick={() => setModal({ open: true, initial: null })}
-              className="px-4 py-2 rounded-full text-[11px] font-bold text-white transition-opacity hover:opacity-90"
-              style={{ backgroundColor: ACCENT, fontFamily: INTER, boxShadow: '0 4px_14px rgba(255,102,196,0.3)' }}
+              className="inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-xs font-bold text-white whitespace-nowrap hover:opacity-90 transition-opacity"
+              style={{ backgroundColor: ACCENT, fontFamily: INTER, boxShadow: '0 4px 14px rgba(96,83,153,0.3)' }}
             >
-              + ADD
+              <Plus className="w-3.5 h-3.5" />
+              ADD
             </button>
             <button
               onClick={() => setIsCategoryEditMode(!isCategoryEditMode)}
@@ -256,7 +257,7 @@ function App() {
               placeholder="Search"
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
-              className="w-full h-[45px] rounded-full border border-black/[0.08] bg-white/95 pl-12 pr-10 text-base shadow-[0_8px_30px_rgba(0,0,0,0.06)] outline-none focus:ring-2 focus:ring-pink-100 focus:border-[#FF66C4] placeholder-gray-400 transition-all"
+              className="w-full h-[45px] rounded-full border border-black/[0.08] bg-white/95 pl-12 pr-10 text-base shadow-[0_8px_30px_rgba(0,0,0,0.06)] outline-none focus:ring-2 focus:ring-[#605399]/20 focus:border-[#605399] placeholder-gray-400 transition-all"
               style={{ fontFamily: INTER }}
             />
             {searchQuery && (

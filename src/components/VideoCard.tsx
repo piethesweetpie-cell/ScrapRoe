@@ -53,7 +53,7 @@ const VideoCard: React.FC<VideoCardProps> = ({
 
         {viewMode === 'large' && (
           <div className="absolute inset-x-0 bottom-0 bg-black/70 p-4 z-10 h-[140px] flex flex-col">
-            <h3 className="text-white text-sm md:text-base font-semibold leading-snug line-clamp-3 group-hover:text-pink-100 transition-colors duration-300">
+            <h3 className="text-white text-sm md:text-base font-semibold leading-snug line-clamp-3 group-hover:text-[#d4cef0] transition-colors duration-300">
               {title}
             </h3>
             <div className="flex flex-wrap gap-1.5 mt-auto">
@@ -61,7 +61,7 @@ const VideoCard: React.FC<VideoCardProps> = ({
                 <button
                   key={tag}
                   onClick={(e) => { e.preventDefault(); e.stopPropagation(); if (onTagClick) onTagClick(tag); }}
-                  className="px-2 py-0.5 bg-white/15 hover:bg-[#FF66C4] text-white/90 hover:text-white rounded-full text-[10px] md:text-xs font-medium transition-all duration-200 cursor-pointer"
+                  className="px-2 py-0.5 bg-white/15 hover:bg-[#605399] text-white/90 hover:text-white rounded-full text-[10px] md:text-xs font-medium transition-all duration-200 cursor-pointer"
                 >
                   #{tag}
                 </button>
@@ -80,7 +80,7 @@ const VideoCard: React.FC<VideoCardProps> = ({
                 <button
                   key={tag}
                   onClick={(e) => { e.preventDefault(); e.stopPropagation(); if (onTagClick) onTagClick(tag); }}
-                  className="px-1.5 py-0.5 bg-[#FF66C4] text-white rounded-full text-[9px] font-medium"
+                  className="px-1.5 py-0.5 bg-[#605399] text-white rounded-full text-[9px] font-medium"
                 >
                   #{tag}
                 </button>

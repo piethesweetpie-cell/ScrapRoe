@@ -179,27 +179,27 @@ const AddVideoModal: React.FC<AddVideoModalProps> = ({ open, onClose, categories
 
         <div className="space-y-4">
           <div>
-            <label className="block text-[11px] font-semibold text-[#FF66C4] mb-1 uppercase tracking-wider">
+            <label className="block text-[11px] font-semibold text-[#605399] mb-1 uppercase tracking-wider">
               원본 URL {errorMsg && <span className="text-red-500 lowercase font-normal ml-2">{errorMsg}</span>}
             </label>
             <input
               type="text"
               value={url}
               onChange={(e) => setUrl(e.target.value)}
-              className="w-full px-4 py-3 border border-gray-200 rounded-xl outline-none text-sm focus:border-[#FF66C4] focus:ring-2 focus:ring-pink-100 transition-all duration-200"
+              className="w-full px-4 py-3 border border-gray-200 rounded-xl outline-none text-sm focus:border-[#605399] focus:ring-2 focus:ring-[#605399]/20 transition-all duration-200"
               placeholder="인스타 릴스 주소를 붙여넣으세요"
             />
           </div>
 
           <div>
             <label className="block text-[11px] font-semibold text-gray-400 mb-1 uppercase tracking-wider">
-              제목 {isFetching && <span className="text-pink-400 lowercase font-normal ml-2 animate-pulse">자동 추출 중...</span>}
+              제목 {isFetching && <span className="text-[#605399] lowercase font-normal ml-2 animate-pulse">자동 추출 중...</span>}
             </label>
             <input
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="w-full px-4 py-3 border border-gray-200 rounded-xl outline-none text-sm focus:border-[#FF66C4] focus:ring-2 focus:ring-pink-100 transition-all duration-200"
+              className="w-full px-4 py-3 border border-gray-200 rounded-xl outline-none text-sm focus:border-[#605399] focus:ring-2 focus:ring-[#605399]/20 transition-all duration-200"
               placeholder="제목이 추출됩니다"
             />
           </div>
@@ -232,7 +232,7 @@ const AddVideoModal: React.FC<AddVideoModalProps> = ({ open, onClose, categories
                 type="text"
                 value={thumbnailUrl}
                 onChange={(e) => setThumbnailUrl(e.target.value)}
-                className="flex-1 px-4 py-2 border border-gray-200 rounded-xl text-[10px] text-gray-400 outline-none focus:border-[#FF66C4] transition-all duration-200"
+                className="flex-1 px-4 py-2 border border-gray-200 rounded-xl text-[10px] text-gray-400 outline-none focus:border-[#605399] transition-all duration-200"
                 placeholder="이미지 주소가 추출됩니다"
               />
             </div>
@@ -244,7 +244,7 @@ const AddVideoModal: React.FC<AddVideoModalProps> = ({ open, onClose, categories
               <select
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
-                className="w-full px-4 py-3 border border-gray-200 rounded-xl outline-none text-sm bg-white appearance-none focus:border-[#FF66C4] focus:ring-2 focus:ring-pink-100 transition-all duration-200 cursor-pointer"
+                className="w-full px-4 py-3 border border-gray-200 rounded-xl outline-none text-sm bg-white appearance-none focus:border-[#605399] focus:ring-2 focus:ring-[#605399]/20 transition-all duration-200 cursor-pointer"
               >
                 {categories.map((c: string) => (
                   <option key={c} value={c}>{c}</option>
@@ -257,7 +257,7 @@ const AddVideoModal: React.FC<AddVideoModalProps> = ({ open, onClose, categories
                 type="text"
                 value={tags}
                 onChange={(e) => setTags(e.target.value)}
-                className="w-full px-4 py-3 border border-gray-200 rounded-xl outline-none text-sm focus:border-[#FF66C4] focus:ring-2 focus:ring-pink-100 transition-all duration-200"
+                className="w-full px-4 py-3 border border-gray-200 rounded-xl outline-none text-sm focus:border-[#605399] focus:ring-2 focus:ring-[#605399]/20 transition-all duration-200"
                 placeholder="예: 누끼, 색보정"
               />
             </div>
@@ -274,7 +274,7 @@ const AddVideoModal: React.FC<AddVideoModalProps> = ({ open, onClose, categories
               tags: tags.split(',').map((t) => t.trim()).filter(Boolean),
             })
           }
-          className="w-full py-3.5 bg-[#FF66C4] text-white rounded-xl font-semibold mt-8 hover:bg-[#ff4db5] active:scale-[0.98] transition-all duration-200 shadow-lg shadow-pink-200 cursor-pointer"
+          className="w-full py-3.5 bg-[#605399] text-white rounded-xl font-semibold mt-8 hover:bg-[#4d3f80] active:scale-[0.98] transition-all duration-200 shadow-lg shadow-[#60539940] cursor-pointer"
         >
           저장하기
         </button>

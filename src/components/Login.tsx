@@ -38,7 +38,7 @@ export default function LoginModal({ onClose }: LoginModalProps) {
             placeholder="이메일"
             required
             autoFocus
-            className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl outline-none focus:border-[#FF66C4] transition-colors text-sm"
+            className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl outline-none focus:border-[#605399] transition-colors text-sm"
           />
           <input
             type="password"
@@ -46,13 +46,13 @@ export default function LoginModal({ onClose }: LoginModalProps) {
             onChange={(e) => setPassword(e.target.value)}
             placeholder="비밀번호"
             required
-            className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl outline-none focus:border-[#FF66C4] transition-colors text-sm"
+            className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl outline-none focus:border-[#605399] transition-colors text-sm"
           />
           {error && <p className="text-sm text-red-500">{error}</p>}
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-2.5 bg-[#FF66C4] text-white rounded-xl font-bold hover:bg-[#ff4d94] transition-all disabled:opacity-50"
+            className="w-full py-2.5 bg-[#605399] text-white rounded-xl font-bold hover:bg-[#4d3f80] transition-all disabled:opacity-50"
           >
             {loading ? '로그인 중...' : '로그인'}
           </button>
