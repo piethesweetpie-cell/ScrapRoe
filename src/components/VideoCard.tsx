@@ -52,7 +52,7 @@ const VideoCard: React.FC<VideoCardProps> = ({
         />
 
         {viewMode === 'large' && (
-          <div className="absolute inset-x-0 bottom-0 bg-black/90 p-4 z-10 h-[140px] flex flex-col">
+          <div className="absolute inset-x-0 bottom-0 bg-black/70 p-4 z-10 h-[140px] flex flex-col">
             <h3 className="text-white text-sm md:text-base font-semibold leading-snug line-clamp-3 group-hover:text-pink-100 transition-colors duration-300">
               {title}
             </h3>
@@ -71,7 +71,7 @@ const VideoCard: React.FC<VideoCardProps> = ({
         )}
 
         {viewMode === 'small' && (
-          <div className="md:hidden absolute inset-x-0 bottom-0 bg-black/90 p-2 z-10 h-[90px] flex flex-col">
+          <div className="md:hidden absolute inset-x-0 bottom-0 bg-black/70 p-2 z-10 h-[90px] flex flex-col">
             <h3 className="text-white text-[11px] font-bold leading-tight line-clamp-2">
               {title}
             </h3>
