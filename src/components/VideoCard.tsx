@@ -7,14 +7,14 @@ interface VideoCardProps {
   thumbnailUrl: string;
   tags: string[];
   postUrl: string;
-  viewMode?: 'large' | 'small'; 
+  viewMode?: 'large' | 'small';
   onEdit: (id: string) => void;
   onDelete: (id: string) => void;
   onTagClick?: (tag: string) => void;
   isAdmin?: boolean;
 }
 
-import { detectSource, instagramEmbedUrl } from '../lib/urlHelpers';
+const FALLBACK_IMAGE = '/fallback.svg';
 
 const VideoCard: React.FC<VideoCardProps> = ({
   id,
@@ -28,46 +28,29 @@ const VideoCard: React.FC<VideoCardProps> = ({
   onTagClick,
   isAdmin = false
 }) => {
-  const source = detectSource(postUrl);
+  const safeThumbnailUrl = thumbnailUrl || FALLBACK_IMAGE;
 
   return (
     <div className="group relative bg-white border-2 border-black rounded-3xl overflow-hidden shadow-sm hover:shadow-xl hover:shadow-black/8 hover:scale-[1.02] transition-all duration-300 masonry-item mb-4 md:mb-5 cursor-pointer">
-      
-      <a 
-        href={postUrl} 
-        target="_blank" 
-        rel="noopener noreferrer" 
+      <a
+        href={postUrl}
+        target="_blank"
+        rel="noopener noreferrer"
         className="relative aspect-[9/16] w-full overflow-hidden block cursor-pointer bg-black"
       >
-        {(source.kind === 'instagram_reel' || source.kind === 'instagram_post') ? (
-          <div className="absolute inset-0 w-full h-full pointer-events-none overflow-hidden">
-            <iframe
-              src={instagramEmbedUrl(source.shortcode, source.kind === 'instagram_reel' ? 'reel' : 'post')}
-              className="absolute w-full"
-              style={{ top: '-60px', height: 'calc(100% + 220px)' }}
-              scrolling="no"
-              frameBorder="0"
-              allowTransparency={true}
-            />
-          </div>
-        ) : (
-          <img 
-            src={thumbnailUrl ? `https://wsrv.nl/?url=${encodeURIComponent(thumbnailUrl)}` : 'https://placehold.co/400x600/2a2a2a/ffffff.png?text=No+Thumbnail'} 
-            alt={title} 
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-            loading="lazy"
-            referrerPolicy="no-referrer"
-            onError={(e) => {
-              const target = e.target as HTMLImageElement;
-              const fallback = 'https://placehold.co/400x600/2a2a2a/ffffff.png?text=No+Thumbnail';
-              if (target.src !== fallback) {
-                target.src = fallback;
-              }
-            }}
-          />
-        )}
-        
-        {/* ✅ [CASE 1] 크게 보기 모드: 모든 기기에서 제목 박스 노출 (4줄) */}
+        <img
+          src={safeThumbnailUrl}
+          alt={title}
+          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+          loading="lazy"
+          onError={(e) => {
+            const target = e.target as HTMLImageElement;
+            if (target.src !== window.location.origin + FALLBACK_IMAGE) {
+              target.src = FALLBACK_IMAGE;
+            }
+          }}
+        />
+
         {viewMode === 'large' && (
           <div className="absolute inset-x-0 bottom-0 bg-black/90 p-4 z-10 h-[140px] flex flex-col">
             <h3 className="text-white text-sm md:text-base font-semibold leading-snug line-clamp-3 group-hover:text-pink-100 transition-colors duration-300">
@@ -87,7 +70,6 @@ const VideoCard: React.FC<VideoCardProps> = ({
           </div>
         )}
 
-        {/* ✅ [CASE 2] 작게 보기 모드: 모바일에서만 제목 박스 노출 (2줄), PC(md)에서는 숨김 */}
         {viewMode === 'small' && (
           <div className="md:hidden absolute inset-x-0 bottom-0 bg-black/90 p-2 z-10 h-[90px] flex flex-col">
             <h3 className="text-white text-[11px] font-bold leading-tight line-clamp-2">
@@ -95,8 +77,8 @@ const VideoCard: React.FC<VideoCardProps> = ({
             </h3>
             <div className="flex flex-wrap gap-1 mt-auto">
               {tags && tags.slice(0, 2).map(tag => (
-                <button 
-                  key={tag} 
+                <button
+                  key={tag}
                   onClick={(e) => { e.preventDefault(); e.stopPropagation(); if (onTagClick) onTagClick(tag); }}
                   className="px-1.5 py-0.5 bg-[#FF66C4] text-white rounded-full text-[9px] font-medium"
                 >
@@ -108,7 +90,6 @@ const VideoCard: React.FC<VideoCardProps> = ({
         )}
       </a>
 
-      {/* 관리 버튼 - 어드민만 */}
       {isAdmin && (
         <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20">
           <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); onEdit(id); }} className="p-1.5 bg-white/90 text-gray-700 rounded-full hover:bg-white hover:text-black shadow-md backdrop-blur-sm transition-all">

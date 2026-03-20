@@ -47,8 +47,11 @@ function App() {
       filtered = filtered.filter(v => v.title.toLowerCase().includes(q) || (v.tags?.some((t: string) => t.toLowerCase().includes(q))));
     }
     setFilteredVideos(filtered);
-    setCurrentPage(1); // 검색이나 카테고리 변경 시 무조건 1페이지로 이동
   }, [videos, selectedCategory, searchQuery]);
+
+  useEffect(() => {
+    setCurrentPage(1); // 검색이나 카테고리 변경 시만 1페이지로 이동
+  }, [selectedCategory, searchQuery]);
 
   const handleAddCategory = () => {
     const name = window.prompt('새 카테고리 이름:');
