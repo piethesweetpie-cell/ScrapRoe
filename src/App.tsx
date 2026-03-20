@@ -211,7 +211,7 @@ function App() {
       </div>
 
       {/* ── Hero ── */}
-      <section ref={heroRef} onMouseMove={handleHeroMouseMove} className="relative flex items-center justify-center select-none" style={{ minHeight: '50vh', paddingTop: '10px', paddingBottom: '24px' }}>
+      <section ref={heroRef} onMouseMove={handleHeroMouseMove} className="relative flex items-center justify-center select-none" style={{ minHeight: '580px', paddingTop: '10px', paddingBottom: '24px' }}>
 
         {/* Blob - 좌측 */}
         <div className="absolute left-[-5%] top-[3%] pointer-events-none z-10 hidden lg:block" style={{ marginTop: '-60px', marginLeft: '-20px' }}>
@@ -246,7 +246,7 @@ function App() {
           </motion.div>
         </div>
         <div className="relative z-20 w-full flex flex-col items-center text-center px-6">
-        <p className="mt-[69px] text-[11px] font-semibold tracking-[0.45em] uppercase text-gray-400 mb-5" style={{ fontFamily: INTER }}>
+        <p className="text-[11px] font-semibold tracking-[0.45em] uppercase text-gray-400 mb-5" style={{ fontFamily: INTER }}>
           Reference &amp; Inspiration Archive
         </p>
 
@@ -257,9 +257,11 @@ function App() {
           SCRAP ROE<span style={{ color: ACCENT }}>.</span>
         </h1>
 
-        <p className="mt-5 text-sm text-gray-400" style={{ fontFamily: INTER }}>
-          레퍼런스·영감·스크랩 아카이브
-        </p>
+        <div className="mt-5 mb-4 inline-flex flex-col items-center w-fit">
+          <p className="text-sm text-gray-400 whitespace-nowrap" style={{ fontFamily: INTER }}>
+            레퍼런스·영감·스크랩 아카이브
+          </p>
+        </div>
 
         {/* 검색창 */}
         <div className="mt-8 w-full max-w-[560px] relative -top-[7px]">
