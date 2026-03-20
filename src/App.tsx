@@ -271,14 +271,14 @@ function App() {
         {/* ── 카테고리 버튼 (FlowRoe 스타일) ── */}
         <div className="mt-8 w-full max-w-[900px]">
           <div className="overflow-x-auto scrollbar-hide">
-            <div className="flex gap-1 pb-1 justify-center flex-wrap">
+            <div className="flex pb-1 justify-center flex-wrap" style={{ gap: '0px' }}>
 
               {/* ALL */}
               <button
                 onClick={() => setSelectedCategory('All')}
                 onMouseEnter={() => setHoveredCategory('All')}
                 onMouseLeave={() => setHoveredCategory(null)}
-                className="relative flex shrink-0 flex-col items-center gap-1 rounded-2xl px-2 py-2 transition-all duration-200"
+                className="relative flex flex-col items-center gap-1 rounded-2xl py-2 transition-all duration-200 w-[88px]"
                 style={{ fontFamily: INTER }}
               >
                 <div
@@ -313,7 +313,7 @@ function App() {
                     onClick={() => isCategoryEditMode ? handleEditCategory(cat) : setSelectedCategory(cat)}
                     onMouseEnter={() => setHoveredCategory(cat)}
                     onMouseLeave={() => setHoveredCategory(null)}
-                    className="relative flex shrink-0 flex-col items-center gap-1 rounded-2xl px-2 py-2 transition-all duration-200"
+                    className="relative flex flex-col items-center gap-1 rounded-2xl py-2 transition-all duration-200 w-[88px]"
                     style={{ fontFamily: INTER }}
                   >
                     <div
@@ -354,7 +354,7 @@ function App() {
               {isCategoryEditMode && (
                 <button
                   onClick={handleAddCategory}
-                  className="flex shrink-0 flex-col items-center gap-1 rounded-2xl px-2 py-2 transition-all duration-200"
+                  className="flex flex-col items-center gap-1 rounded-2xl py-2 transition-all duration-200 w-[88px]"
                   style={{ fontFamily: INTER }}
                 >
                   <div
