@@ -131,7 +131,7 @@ async function main() {
         .from("videos")
         .update({
           thumbnail_url: publicPath,
-          title: row.title || meta.title,
+          title: meta.title || row.title,
         })
         .eq("id", id);
 

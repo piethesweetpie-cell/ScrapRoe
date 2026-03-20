@@ -174,14 +174,20 @@
   "hotPaths": [
     {
       "path": "src\\components\\VideoCard.tsx",
-      "accessCount": 11,
-      "lastAccessed": 1773987800438,
+      "accessCount": 12,
+      "lastAccessed": 1773989245554,
       "type": "file"
     },
     {
       "path": "src\\App.tsx",
-      "accessCount": 5,
-      "lastAccessed": 1773985942165,
+      "accessCount": 6,
+      "lastAccessed": 1773989228531,
+      "type": "file"
+    },
+    {
+      "path": "scripts\\download-thumbnails.mjs",
+      "accessCount": 6,
+      "lastAccessed": 1773990326888,
       "type": "file"
     },
     {
@@ -197,15 +203,27 @@
       "type": "file"
     },
     {
-      "path": "scripts\\download-thumbnails.mjs",
-      "accessCount": 2,
-      "lastAccessed": 1773988415954,
-      "type": "file"
-    },
-    {
       "path": "package.json",
       "accessCount": 2,
       "lastAccessed": 1773988478177,
+      "type": "file"
+    },
+    {
+      "path": "src\\components\\AddVideoModal.tsx",
+      "accessCount": 2,
+      "lastAccessed": 1773990283939,
+      "type": "file"
+    },
+    {
+      "path": "C:\\Users\\minss\\.claude\\settings.json",
+      "accessCount": 2,
+      "lastAccessed": 1773990811433,
+      "type": "file"
+    },
+    {
+      "path": "C:\\Users\\minss\\.claude\\push-hook.sh",
+      "accessCount": 2,
+      "lastAccessed": 1773990929917,
       "type": "file"
     },
     {
@@ -221,15 +239,15 @@
       "type": "file"
     },
     {
-      "path": "src\\components\\AddVideoModal.tsx",
-      "accessCount": 1,
-      "lastAccessed": 1773945837616,
-      "type": "file"
-    },
-    {
       "path": "public\\fallback.svg",
       "accessCount": 1,
       "lastAccessed": 1773987814380,
+      "type": "file"
+    },
+    {
+      "path": "vite.config.ts",
+      "accessCount": 1,
+      "lastAccessed": 1773989895334,
       "type": "file"
     }
   ],
