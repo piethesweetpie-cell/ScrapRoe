@@ -135,7 +135,7 @@ function App() {
       <div className="fixed bottom-0 left-0 right-0 h-80 pointer-events-none z-0" style={{ background: 'linear-gradient(to bottom, transparent 0%, rgba(232,232,232,0.25) 40%, rgba(218,218,218,0.6) 100%)' }} />
 
       {/* ── Floating pill nav ── */}
-      <div className="sticky top-5 left-0 right-0 z-50 flex items-center justify-between gap-6 px-6 md:px-12">
+      <div className="fixed top-5 left-0 right-0 z-50 flex items-center justify-between gap-6 px-6 md:px-12">
         <header
           className="flex w-fit items-center gap-4 px-5 py-2.5 backdrop-blur-md rounded-[40px] border border-black/[0.07] shadow-[0_4px_24px_rgba(0,0,0,0.07)] whitespace-nowrap"
           style={{ backgroundColor: 'rgba(255,255,255,0.94)' }}
