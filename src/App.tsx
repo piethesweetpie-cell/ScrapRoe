@@ -9,12 +9,13 @@ import { supabase } from './lib/supabaseClient';
 import { useAuth } from './hooks/useAuth';
 import './masonry.css';
 import logoImg from './assets/ONROE.png';
-import objBlob from './assets/obj-blob.png';
-import objDiamond from './assets/obj-diamond.png';
-import objTorus from './assets/obj-torus.png';
+import objBlob from './assets/obj-lollipop.png';
+import objDiamond from './assets/obj-jelly.png';
+import objTorus from './assets/obj-macaron.png';
 
 const INTER = "'Inter', sans-serif";
-const ACCENT = '#605399';
+const INTER_KR = "'Inter', 'IBM Plex Sans KR', sans-serif";
+const ACCENT = '#c888ed';
 
 const CATEGORY_ICONS: Record<string, string> = {
   ALL: 'apps',
@@ -54,11 +55,11 @@ function App() {
   const smoothScroll = useSpring(scrollYProgress, { damping: 26, stiffness: 130 });
 
   const blobX = useTransform(springX, [-0.5, 0.5], [-30, 30]);
-  const blobScrollY = useTransform(smoothScroll, [0, 0.5], [0, -500]);
+  const blobScrollX = useTransform(smoothScroll, [0, 0.5], [0, -420]);
   const diamondX = useTransform(springX, [-0.5, 0.5], [25, -25]);
-  const diamondScrollY = useTransform(smoothScroll, [0, 0.5], [0, 500]);
+  const diamondScrollX = useTransform(smoothScroll, [0, 0.5], [0, 420]);
   const torusX = useTransform(springX, [-0.5, 0.5], [-18, 18]);
-  const torusScrollY = useTransform(smoothScroll, [0, 0.5], [0, -380]);
+  const torusScrollX = useTransform(smoothScroll, [0, 0.5], [0, 420]);
   const objOpacity = useTransform(smoothScroll, [0, 0.4], [1, 0]);
   const objScale = useTransform(smoothScroll, [0, 0.5], [1, 0.82]);
   const rotateLeft = useTransform(smoothScroll, [0, 0.5], [0, -45]);
@@ -98,26 +99,21 @@ function App() {
 
   useEffect(() => {
     const allCats = ['All', ...categories];
-    if (allCats.length === 0) return;
     const handleKeyDown = (e: KeyboardEvent) => {
-      const tag = (e.target as HTMLElement).tagName;
-      if (tag === 'INPUT' || tag === 'TEXTAREA') return;
-      if (e.key === 'ArrowLeft') {
-        setSelectedCategory(prev => {
-          const i = allCats.indexOf(prev);
-          return allCats[Math.max(0, i - 1)];
-        });
-      }
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
       if (e.key === 'ArrowRight') {
-        setSelectedCategory(prev => {
-          const i = allCats.indexOf(prev);
-          return allCats[Math.min(allCats.length - 1, i + 1)];
-        });
+        const idx = allCats.indexOf(selectedCategory);
+        const next = allCats[(idx + 1) % allCats.length];
+        setSelectedCategory(next);
+      } else if (e.key === 'ArrowLeft') {
+        const idx = allCats.indexOf(selectedCategory);
+        const prev = allCats[(idx - 1 + allCats.length) % allCats.length];
+        setSelectedCategory(prev);
       }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [categories]);
+  }, [categories, selectedCategory]);
 
   const handleAddCategory = () => {
     const name = window.prompt('새 카테고리 이름:');
@@ -160,8 +156,8 @@ function App() {
       {/* ── Floating pill nav ── */}
       <div className="absolute top-5 left-0 right-0 z-50 flex items-center justify-between gap-6 px-6 md:px-12">
         <header
-          className="flex w-fit items-center gap-4 px-5 py-2.5 bg-white/60 backdrop-blur-md rounded-[40px] border border-white/20 shadow-[0_4px_24px_rgba(0,0,0,0.07)] whitespace-nowrap"
-          style={{ WebkitBackdropFilter: 'blur(12px)' }}
+          className="flex w-fit items-center gap-4 px-5 py-2.5 backdrop-blur-md rounded-[40px] border border-white/20 shadow-[0_4px_24px_rgba(0,0,0,0.07)] whitespace-nowrap"
+          style={{ backgroundColor: 'rgba(255,255,255,0.6)' }}
         >
           <button
             type="button"
@@ -237,51 +233,57 @@ function App() {
       <section ref={heroRef} onMouseMove={handleHeroMouseMove} className="relative flex items-center justify-center select-none" style={{ minHeight: '50vh', paddingTop: '10px', paddingBottom: '24px' }}>
 
         {/* Blob - 좌측 */}
-        <div className="absolute left-[-5%] top-[3%] pointer-events-none z-10 hidden lg:block" style={{ marginTop: '-60px', marginLeft: '-20px' }}>
+        <div className="absolute left-[-2%] top-[5%] pointer-events-none z-10 hidden lg:block" style={{ marginTop: '0px', marginLeft: '0px' }}>
           <motion.div initial={{ scale: 1.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ duration: 1.4, delay: 0.05, ease: [0.22, 1, 0.36, 1] }}>
             <motion.div animate={{ y: [0, -16, 0] }} transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut', delay: 1.6 }}>
-              <motion.div style={{ x: blobX, y: blobScrollY, scale: objScale, opacity: objOpacity, rotateZ: rotateLeft }}>
-                <img src={objBlob} alt="" className="w-[342px] h-auto md:w-[420px]" style={{ filter: 'drop-shadow(0 9px 14px rgba(15,23,42,0.12))' }} draggable={false} />
+              <motion.div style={{ x: blobScrollX, scale: objScale, opacity: objOpacity, rotateZ: rotateLeft }}>
+                <motion.div style={{ x: blobX }}>
+                  <img src={objBlob} alt="" className="w-[256px] h-auto md:w-[315px]" style={{ filter: 'drop-shadow(0 9px 14px rgba(15,23,42,0.12))' }} draggable={false} />
+                </motion.div>
               </motion.div>
             </motion.div>
           </motion.div>
         </div>
 
         {/* Diamond - 우측 상단 */}
-        <div className="absolute right-[-10%] top-[-31%] pointer-events-none z-10 hidden sm:block" style={{ marginRight: '55px' }}>
+        <div className="absolute right-[-4%] top-[2%] pointer-events-none z-10 hidden sm:block" style={{ marginRight: '13px', marginTop: '-40px' }}>
           <motion.div initial={{ scale: 1.7, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ duration: 1.4, delay: 0.14, ease: [0.22, 1, 0.36, 1] }}>
             <motion.div animate={{ y: [0, -20, 0] }} transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut', delay: 1.6 }}>
-              <motion.div style={{ x: diamondX, y: diamondScrollY, scale: objScale, opacity: objOpacity, rotateZ: rotateRight }}>
-                <img src={objDiamond} alt="" className="w-[268px] h-auto md:w-[340px] lg:w-[389px]" style={{ filter: 'drop-shadow(0 10px 15px rgba(88,28,135,0.14))' }} draggable={false} />
+              <motion.div style={{ x: diamondScrollX, scale: objScale, opacity: objOpacity, rotateZ: rotateRight }}>
+                <motion.div style={{ x: diamondX }}>
+                  <img src={objTorus} alt="" className="w-[199px] h-auto md:w-[252px] lg:w-[289px]" style={{ filter: 'drop-shadow(0 10px 15px rgba(88,28,135,0.14))' }} draggable={false} />
+                </motion.div>
               </motion.div>
             </motion.div>
           </motion.div>
         </div>
 
         {/* Torus - 우측 하단 */}
-        <div className="absolute right-[-11%] bottom-[-8%] pointer-events-none z-10 hidden sm:block" style={{ marginRight: '-30px' }}>
+        <div className="absolute right-[-3%] bottom-[-5%] pointer-events-none z-10 hidden sm:block" style={{ marginBottom: '101px', marginRight: '-40px' }}>
           <motion.div initial={{ scale: 1.6, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ duration: 1.4, delay: 0.24, ease: [0.22, 1, 0.36, 1] }}>
             <motion.div animate={{ y: [0, 14, 0], rotate: [0, 4, 0] }} transition={{ duration: 9, repeat: Infinity, ease: 'easeInOut', delay: 1.6 }}>
-              <motion.div style={{ x: torusX, y: torusScrollY, rotateZ: rotateLeft, scale: objScale, opacity: objOpacity }}>
-                <img src={objTorus} alt="" className="w-[247px] h-auto md:w-[302px] lg:w-[358px]" style={{ filter: 'drop-shadow(0 11px 16px rgba(30,41,59,0.14))' }} draggable={false} />
+              <motion.div style={{ x: torusScrollX, rotateZ: rotateLeft, scale: objScale, opacity: objOpacity }}>
+                <motion.div style={{ x: torusX }}>
+                  <img src={objDiamond} alt="" className="w-[173px] h-auto md:w-[209px] lg:w-[250px]" style={{ filter: 'drop-shadow(0 11px 16px rgba(30,41,59,0.14))' }} draggable={false} />
+                </motion.div>
               </motion.div>
             </motion.div>
           </motion.div>
         </div>
         <div className="relative z-20 w-full flex flex-col items-center text-center px-6">
-        <p className="mt-[69px] text-[11px] font-semibold tracking-[0.45em] uppercase text-gray-400 mb-5" style={{ fontFamily: INTER }}>
+        <p className="mt-[69px] text-[11px] font-semibold tracking-[0.45em] uppercase mb-5" style={{ fontFamily: INTER, color: 'hsl(240, 4%, 48%)' }}>
           Reference &amp; Inspiration Archive
         </p>
 
         <h1
-          className="leading-[0.9] tracking-[-0.05em] text-[#09090B] whitespace-nowrap"
+          className="leading-[0.9] tracking-[-0.05em] text-foreground whitespace-nowrap"
           style={{ fontSize: 'clamp(3rem, 9vw, 7.8rem)', fontFamily: INTER, fontWeight: 600 }}
         >
           SCRAP ROE<span style={{ color: ACCENT }}>.</span>
         </h1>
 
         <div className="mt-5 mb-4 inline-flex flex-col items-center w-fit">
-          <p className="text-sm text-gray-400 whitespace-nowrap" style={{ fontFamily: INTER }}>
+          <p className="text-sm whitespace-nowrap" style={{ fontFamily: INTER_KR, color: 'hsl(240, 4%, 48%)' }}>
             레퍼런스·영감·스크랩 아카이브
           </p>
         </div>
@@ -295,8 +297,8 @@ function App() {
               placeholder="Search"
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
-              className="w-full h-[45px] rounded-full border border-black/[0.08] bg-white/95 pl-12 pr-10 text-base shadow-[0_8px_30px_rgba(0,0,0,0.06)] outline-none focus:ring-2 focus:ring-[#605399]/20 focus:border-[#605399] placeholder-gray-400 transition-all"
-              style={{ fontFamily: INTER }}
+              className="w-full h-[45px] rounded-full border border-black/[0.08] bg-white/95 pl-12 pr-10 text-sm shadow-[0_8px_30px_rgba(0,0,0,0.06)] outline-none focus:ring-2 focus:ring-[#c888ed]/20 focus:border-[#c888ed] placeholder:font-light placeholder:text-gray-300 transition-all"
+              style={{ fontFamily: INTER, fontWeight: 400 }}
             />
             {searchQuery && (
               <button onClick={() => setSearchQuery('')} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 text-xs">
@@ -307,7 +309,7 @@ function App() {
         </div>
 
         {/* ── 카테고리 버튼 (FlowRoe 스타일) ── */}
-        <div className="mt-8 w-full max-w-[900px] relative -top-[7px]">
+        <div className="mt-8 mb-[24px] w-full max-w-[900px] relative -top-[7px]">
           <div className="overflow-x-auto scrollbar-hide">
             <div className="relative mx-auto flex items-start justify-center" style={{ gap: '30px' }}>
               {/* 연결선 */}
@@ -411,7 +413,7 @@ function App() {
       </section>
 
       {/* ── 콘텐츠 ── */}
-      <main className="relative z-10 bg-[#f9f9f9] max-w-[1920px] mx-auto px-4 sm:px-8 pb-10">
+      <main className="relative z-10 max-w-[1920px] mx-auto px-4 sm:px-8 pb-0">
 
         {/* 뷰 모드 토글 + 결과 수 */}
         <div className="flex items-center justify-between mb-6">
@@ -508,7 +510,7 @@ function App() {
         )}
       </main>
 
-      <footer className="relative z-10 px-6 py-5 text-center md:px-12">
+      <footer className="relative z-10 px-6 pt-0 pb-4 text-center md:px-12">
         <p className="text-[11px] tracking-[0.16em] text-gray-400 uppercase" style={{ fontFamily: INTER }}>
           Copyright 2026{' '}
           <a href="mailto:onroeway@gmail.com" className="transition-colors hover:text-[#09090B]">ONROE</a>

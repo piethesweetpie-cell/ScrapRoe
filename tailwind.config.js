@@ -5,7 +5,12 @@ export default {
     "./src/**/*.{js,ts,jsx,tsx}", // src 폴더 안의 모든 파일을 감시해야 합니다!
   ],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        'muted-foreground': 'hsl(var(--muted-foreground))',
+        'foreground': 'hsl(var(--foreground))',
+      },
+    },
   },
   plugins: [],
 }

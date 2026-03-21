@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "lastScanned": 1773941986710,
+  "lastScanned": 1774066128672,
   "projectRoot": "d:\\Program\\scrapbook",
   "techStack": {
     "languages": [
@@ -51,7 +51,8 @@
       "build": "vite build",
       "lint": "eslint .",
       "preview": "vite preview",
-      "typecheck": "tsc --noEmit -p tsconfig.app.json"
+      "typecheck": "tsc --noEmit -p tsconfig.app.json",
+      "thumbnails": "node --env-file=.env scripts/download-thumbnails.mjs"
     }
   },
   "conventions": {
@@ -64,6 +65,8 @@
     "isMonorepo": false,
     "workspaces": [],
     "mainDirectories": [
+      "public",
+      "scripts",
       "src"
     ],
     "gitBranches": {
@@ -77,14 +80,14 @@
       "path": "design-system",
       "purpose": null,
       "fileCount": 0,
-      "lastAccessed": 1773941986681,
+      "lastAccessed": 1774066128543,
       "keyFiles": []
     },
     "dist": {
       "path": "dist",
       "purpose": "Distribution/build output",
       "fileCount": 6,
-      "lastAccessed": 1773941986681,
+      "lastAccessed": 1774066128544,
       "keyFiles": [
         "index.html",
         "manifest.webmanifest",
@@ -93,11 +96,39 @@
         "workbox-1d305bb8.js"
       ]
     },
+    "images": {
+      "path": "images",
+      "purpose": null,
+      "fileCount": 2,
+      "lastAccessed": 1774066128581,
+      "keyFiles": [
+        "3d.png",
+        "3d2.png"
+      ]
+    },
+    "public": {
+      "path": "public",
+      "purpose": "Public files",
+      "fileCount": 1,
+      "lastAccessed": 1774066128582,
+      "keyFiles": [
+        "fallback.svg"
+      ]
+    },
+    "scripts": {
+      "path": "scripts",
+      "purpose": "Build/utility scripts",
+      "fileCount": 1,
+      "lastAccessed": 1774066128582,
+      "keyFiles": [
+        "download-thumbnails.mjs"
+      ]
+    },
     "src": {
       "path": "src",
       "purpose": "Source code",
       "fileCount": 6,
-      "lastAccessed": 1773941986689,
+      "lastAccessed": 1774066128583,
       "keyFiles": [
         "App.tsx",
         "index.css",
@@ -110,14 +141,14 @@
       "path": "supabase",
       "purpose": null,
       "fileCount": 0,
-      "lastAccessed": 1773941986690,
+      "lastAccessed": 1774066128583,
       "keyFiles": []
     },
     "dist\\assets": {
       "path": "dist\\assets",
       "purpose": "Static assets",
       "fileCount": 2,
-      "lastAccessed": 1773941986690,
+      "lastAccessed": 1774066128584,
       "keyFiles": [
         "index-8sM4Kk-n.js",
         "index-BJgjrzLM.css"
@@ -126,17 +157,19 @@
     "src\\assets": {
       "path": "src\\assets",
       "purpose": "Static assets",
-      "fileCount": 1,
-      "lastAccessed": 1773941986691,
+      "fileCount": 7,
+      "lastAccessed": 1774066128585,
       "keyFiles": [
-        "ONROE.png"
+        "obj-blob.png",
+        "obj-diamond.png",
+        "obj-jelly.png"
       ]
     },
     "src\\components": {
       "path": "src\\components",
       "purpose": "UI components",
       "fileCount": 5,
-      "lastAccessed": 1773941986691,
+      "lastAccessed": 1774066128585,
       "keyFiles": [
         "AddVideoModal.tsx",
         "Login.tsx",
@@ -147,7 +180,7 @@
       "path": "src\\lib",
       "purpose": "Library code",
       "fileCount": 4,
-      "lastAccessed": 1773941986691,
+      "lastAccessed": 1774066128586,
       "keyFiles": [
         "localVideos.ts",
         "supabase.ts",
@@ -158,98 +191,19 @@
       "path": "src\\pages",
       "purpose": "Page components",
       "fileCount": 0,
-      "lastAccessed": 1773941986692,
+      "lastAccessed": 1774066128586,
       "keyFiles": []
     },
     "supabase\\migrations": {
       "path": "supabase\\migrations",
       "purpose": "Database migrations",
       "fileCount": 1,
-      "lastAccessed": 1773941986692,
+      "lastAccessed": 1774066128588,
       "keyFiles": [
         "20260303052055_create_videos_table.sql"
       ]
     }
   },
-  "hotPaths": [
-    {
-      "path": "src\\components\\VideoCard.tsx",
-      "accessCount": 12,
-      "lastAccessed": 1773989245554,
-      "type": "file"
-    },
-    {
-      "path": "src\\App.tsx",
-      "accessCount": 6,
-      "lastAccessed": 1773989228531,
-      "type": "file"
-    },
-    {
-      "path": "scripts\\download-thumbnails.mjs",
-      "accessCount": 6,
-      "lastAccessed": 1773990326888,
-      "type": "file"
-    },
-    {
-      "path": "",
-      "accessCount": 3,
-      "lastAccessed": 1773988384745,
-      "type": "directory"
-    },
-    {
-      "path": ".env",
-      "accessCount": 2,
-      "lastAccessed": 1773987858405,
-      "type": "file"
-    },
-    {
-      "path": "package.json",
-      "accessCount": 2,
-      "lastAccessed": 1773988478177,
-      "type": "file"
-    },
-    {
-      "path": "src\\components\\AddVideoModal.tsx",
-      "accessCount": 2,
-      "lastAccessed": 1773990283939,
-      "type": "file"
-    },
-    {
-      "path": "C:\\Users\\minss\\.claude\\settings.json",
-      "accessCount": 2,
-      "lastAccessed": 1773990811433,
-      "type": "file"
-    },
-    {
-      "path": "C:\\Users\\minss\\.claude\\push-hook.sh",
-      "accessCount": 2,
-      "lastAccessed": 1773990929917,
-      "type": "file"
-    },
-    {
-      "path": "src",
-      "accessCount": 1,
-      "lastAccessed": 1773944647913,
-      "type": "directory"
-    },
-    {
-      "path": "src\\lib\\urlHelpers.ts",
-      "accessCount": 1,
-      "lastAccessed": 1773945503955,
-      "type": "file"
-    },
-    {
-      "path": "public\\fallback.svg",
-      "accessCount": 1,
-      "lastAccessed": 1773987814380,
-      "type": "file"
-    },
-    {
-      "path": "vite.config.ts",
-      "accessCount": 1,
-      "lastAccessed": 1773989895334,
-      "type": "file"
-    }
-  ],
+  "hotPaths": [],
   "userDirectives": []
 }
