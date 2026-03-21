@@ -80,29 +80,11 @@ useEffect(() => {
           setTitle('정보를 불러오는 중입니다...');
 
           try {
-            const res = await fetch(`https://api.microlink.io?url=${encodeURIComponent(cleanUrl)}`);
+            const res = await fetch(`/api/instagram-meta?url=${encodeURIComponent(cleanUrl)}`);
             const json = await res.json();
 
-            let fetchedTitle = '';
-            let fetchedThumb = '';
-
-            if (json?.status === 'success') {
-              fetchedTitle = json.data?.title || '';
-              fetchedThumb = json.data?.image?.url || '';
-            }
-
-            // 로그인 유도 텍스트 필터링
-            const junkPhrases = ['Create an account', 'Log in', 'Welcome back'];
-            if (junkPhrases.some(phrase => fetchedTitle.includes(phrase))) {
-              fetchedTitle = '';
-            }
-
-            // 40자 초과 시 자르기
-            if (fetchedTitle.length > 40) {
-              fetchedTitle = fetchedTitle.substring(0, 40) + '...';
-            }
-
-            fetchedTitle = fetchedTitle.trim() || 'Instagram';
+            const fetchedTitle = json.title || 'Instagram';
+            const fetchedThumb = json.image || '';
 
             setTitle(fetchedTitle);
             setThumbnailUrl(fetchedThumb);
