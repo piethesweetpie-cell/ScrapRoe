@@ -18,9 +18,7 @@ const AddVideoModal: React.FC<AddVideoModalProps> = ({ open, onClose, categories
   const [isFetching, setIsFetching] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
 
-  const JSONLINK_API_KEY = 'pk_7b6c2135e19c2d3e2e6f58bc8c3be201a0763f01';
-
-  useEffect(() => {
+useEffect(() => {
     if (open) {
       setUrl(initial?.url || '');
       setTitle(initial?.title || '');
@@ -82,57 +80,29 @@ const AddVideoModal: React.FC<AddVideoModalProps> = ({ open, onClose, categories
           setTitle('정보를 불러오는 중입니다...');
 
           try {
-            const res1 = await fetch(
-              `https://jsonlink.io/api/extract?api_key=${encodeURIComponent(JSONLINK_API_KEY)}&url=${encodeURIComponent(cleanUrl)}`
-            );
+            const res = await fetch(`https://api.microlink.io?url=${encodeURIComponent(cleanUrl)}`);
+            const json = await res.json();
 
-            if (!res1.ok) {
-              throw new Error(`JSONLink 실패 (${res1.status})`);
+            let fetchedTitle = '';
+            let fetchedThumb = '';
+
+            if (json?.status === 'success') {
+              fetchedTitle = json.data?.title || '';
+              fetchedThumb = json.data?.image?.url || '';
             }
 
-            const data1 = await res1.json();
-            
-            // 🚀 [수정됨] 제목(title) 우선순위 복구! (아이디가 정상적으로 나옵니다)
-            let extractedTitle =
-              data1?.title ||
-              data1?.meta?.title ||
-              data1?.og?.title ||
-              data1?.open_graph?.title ||
-              data1?.twitter?.title ||
-              data1?.description ||
-              '';
-
-            // 🧹 인스타 특유의 "조회수, 좋아요" 쓰레기 텍스트 청소기 (한/영 완벽 대응)
-            // 예: "1.2M Likes, 200 Comments - User (@id) ..." -> "User (@id) ..."
-            if (extractedTitle.includes(' - ')) {
-              const splitArr = extractedTitle.split(' - ');
-              const possibleStats = splitArr[0];
-              // 앞부분에 숫자와 좋아요/조회수 관련 단어가 있으면 그 부분만 날려버립니다.
-              if (/[0-9]/.test(possibleStats) && /(Like|View|Comment|Play|좋아요|조회수|댓글)/i.test(possibleStats)) {
-                extractedTitle = splitArr.slice(1).join(' - ');
-              }
-            }
-
-            // 🚨 무의미한 로그인 요구 텍스트만 필터링 (Instagram 단어는 살려둠)
+            // 로그인 유도 텍스트 필터링
             const junkPhrases = ['Create an account', 'Log in', 'Welcome back'];
-            if (junkPhrases.some(phrase => extractedTitle.includes(phrase))) {
-              extractedTitle = ''; 
+            if (junkPhrases.some(phrase => fetchedTitle.includes(phrase))) {
+              fetchedTitle = '';
             }
 
-            // 제목이 너무 길면 40자에서 자르기
-            if (extractedTitle.length > 40) {
-              extractedTitle = extractedTitle.substring(0, 40) + '...';
+            // 40자 초과 시 자르기
+            if (fetchedTitle.length > 40) {
+              fetchedTitle = fetchedTitle.substring(0, 40) + '...';
             }
 
-            const fetchedTitle = extractedTitle.trim() || 'Instagram Video';
-
-            const fetchedThumb =
-              (Array.isArray(data1?.images) && data1.images.length > 0 ? data1.images[0] : '') ||
-              data1?.image ||
-              data1?.meta?.image ||
-              data1?.og?.image ||
-              data1?.twitter?.image ||
-              '';
+            fetchedTitle = fetchedTitle.trim() || 'Instagram';
 
             setTitle(fetchedTitle);
             setThumbnailUrl(fetchedThumb);
