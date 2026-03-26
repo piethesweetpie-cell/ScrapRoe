@@ -25,4 +25,3 @@ dist-ssr
 # Claude Code / OMC 상태 파일
 .claude/
 .omc/
-images/
