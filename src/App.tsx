@@ -38,7 +38,7 @@ function App() {
   const [isCategoryEditMode, setIsCategoryEditMode] = useState(false);
   const [modal, setModal] = useState<{ open: boolean; initial: any }>({ open: false, initial: null });
   const [currentPage, setCurrentPage] = useState(1);
-  const [viewMode, setViewMode] = useState<'large' | 'small'>(
+  const [viewMode, setViewMode] = useState<'large' | 'small'>(() =>
     typeof window !== 'undefined' && window.innerWidth < 768 ? 'small' : 'large'
   );
   const [loginModalOpen, setLoginModalOpen] = useState(false);
@@ -211,7 +211,7 @@ function App() {
       </div>
 
       {/* ── Hero ── */}
-      <section ref={heroRef} onMouseMove={handleHeroMouseMove} className="relative flex items-center justify-center select-none" style={{ minHeight: '50vh', paddingTop: '10px', paddingBottom: '24px' }}>
+      <section ref={heroRef} onMouseMove={handleHeroMouseMove} className="relative flex items-center justify-center select-none" style={{ minHeight: '35vh', paddingTop: '10px', paddingBottom: '17px' }}>
 
         {/* Mobile corner objects */}
         <div className="absolute left-[-76px] top-[40px] pointer-events-none z-10 block sm:hidden">
@@ -280,7 +280,7 @@ function App() {
         </div>
         <div className="relative z-20 w-full flex flex-col items-center text-center px-6">
         <p className="mt-[76px] text-[11px] font-semibold tracking-[0.24em] uppercase mb-5 md:mt-[69px] md:tracking-[0.45em]" style={{ fontFamily: INTER, color: 'hsl(240, 4%, 48%)' }}>
-          Reference &amp; Inspiration Archive
+          Inspiration Archive
         </p>
 
         <h1
@@ -519,17 +519,14 @@ function App() {
       </main>
 
       <footer className="relative z-10 px-6 pt-0 pb-4 text-center md:px-12">
-        <button
-          type="button"
-          onClick={() => user ? signOut() : setLoginModalOpen(true)}
-          className="text-[11px] tracking-[0.16em] text-gray-400 uppercase transition-colors hover:text-gray-500"
-          style={{ fontFamily: INTER }}
-          aria-label={user ? 'Admin sign out' : 'Admin sign in'}
-        >
+        <p className="text-[11px] tracking-[0.16em] text-gray-400 uppercase select-none" style={{ fontFamily: INTER }}>
           Copyright 2026{' '}
-          <span>ONROE</span>
+          <span
+            onClick={() => user ? signOut() : setLoginModalOpen(true)}
+            style={{ cursor: 'default' }}
+          >ONROE</span>
           . All rights reserved.
-        </button>
+        </p>
       </footer>
 
       {loginModalOpen && <LoginModal onClose={() => setLoginModalOpen(false)} />}
