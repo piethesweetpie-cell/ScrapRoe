@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import Masonry from 'react-masonry-css';
-import { Search, Plus, LogIn, LogOut, Lock } from 'lucide-react';
+import { Search, Plus } from 'lucide-react';
 import { motion, useMotionValue, useTransform, useSpring, useScroll } from 'framer-motion';
 import VideoCard from './components/VideoCard';
 import AddVideoModal from './components/AddVideoModal';
@@ -182,25 +182,6 @@ function App() {
             Flow Roe
           </a>
 
-          {user ? (
-            <button
-              type="button"
-              onClick={() => signOut()}
-              className="flex items-center gap-1 text-gray-400 hover:text-[#09090B] transition-colors"
-              title={user.email ?? ''}
-            >
-              <Lock className="w-3.5 h-3.5" />
-              <LogOut className="w-3.5 h-3.5" />
-            </button>
-          ) : (
-            <button
-              type="button"
-              onClick={() => setLoginModalOpen(true)}
-              className="text-gray-400 hover:text-[#09090B] transition-colors"
-            >
-              <LogIn className="w-4 h-4" />
-            </button>
-          )}
         </header>
 
         {isAdmin && (
@@ -538,11 +519,17 @@ function App() {
       </main>
 
       <footer className="relative z-10 px-6 pt-0 pb-4 text-center md:px-12">
-        <p className="text-[11px] tracking-[0.16em] text-gray-400 uppercase" style={{ fontFamily: INTER }}>
+        <button
+          type="button"
+          onClick={() => user ? signOut() : setLoginModalOpen(true)}
+          className="text-[11px] tracking-[0.16em] text-gray-400 uppercase transition-colors hover:text-gray-500"
+          style={{ fontFamily: INTER }}
+          aria-label={user ? 'Admin sign out' : 'Admin sign in'}
+        >
           Copyright 2026{' '}
-          <a href="mailto:onroeway@gmail.com" className="transition-colors hover:text-[#09090B]">ONROE</a>
+          <span>ONROE</span>
           . All rights reserved.
-        </p>
+        </button>
       </footer>
 
       {loginModalOpen && <LoginModal onClose={() => setLoginModalOpen(false)} />}
