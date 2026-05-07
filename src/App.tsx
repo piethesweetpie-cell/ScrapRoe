@@ -154,7 +154,7 @@ function App() {
       <div className="fixed bottom-0 left-0 right-0 h-80 pointer-events-none z-0" style={{ background: 'linear-gradient(to bottom, transparent 0%, rgba(232,232,232,0.25) 40%, rgba(218,218,218,0.6) 100%)' }} />
 
       {/* ── Floating pill nav ── */}
-      <div className="absolute top-5 left-0 right-0 z-50 flex items-center justify-between gap-6 px-6 md:px-12">
+      <div className="absolute top-5 left-0 right-0 z-50 flex items-center justify-center gap-6 px-6 md:justify-between md:px-12">
         <header
           className="flex w-fit items-center gap-4 px-5 py-2.5 backdrop-blur-md rounded-[40px] border border-white/20 shadow-[0_4px_24px_rgba(0,0,0,0.07)] whitespace-nowrap"
           style={{ backgroundColor: 'rgba(255,255,255,0.6)' }}
@@ -204,7 +204,7 @@ function App() {
         </header>
 
         {isAdmin && (
-          <div className="flex gap-2 items-center">
+          <div className="absolute right-6 top-1/2 flex -translate-y-1/2 gap-2 items-center md:static md:translate-y-0">
             <button
               onClick={() => setModal({ open: true, initial: null })}
               className="inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-xs font-bold text-white whitespace-nowrap hover:opacity-90 transition-opacity"
@@ -231,6 +231,33 @@ function App() {
 
       {/* ── Hero ── */}
       <section ref={heroRef} onMouseMove={handleHeroMouseMove} className="relative flex items-center justify-center select-none" style={{ minHeight: '50vh', paddingTop: '10px', paddingBottom: '24px' }}>
+
+        {/* Mobile corner objects */}
+        <div className="absolute left-[-76px] top-[40px] pointer-events-none z-10 block sm:hidden">
+          <motion.img
+            src={objBlob}
+            alt=""
+            className="w-[184px] h-auto"
+            initial={{ scale: 1.35, opacity: 0, rotate: -18 }}
+            animate={{ scale: 1, opacity: 1, rotate: -10, y: [0, -8, 0] }}
+            transition={{ opacity: { duration: 0.8 }, scale: { duration: 1 }, rotate: { duration: 1 }, y: { duration: 7, repeat: Infinity, ease: 'easeInOut', delay: 1 } }}
+            style={{ filter: 'drop-shadow(0 10px 18px rgba(15,23,42,0.16))' }}
+            draggable={false}
+          />
+        </div>
+
+        <div className="absolute right-[-70px] top-[35px] pointer-events-none z-10 block sm:hidden">
+          <motion.img
+            src={objTorus}
+            alt=""
+            className="w-[176px] h-auto"
+            initial={{ scale: 1.35, opacity: 0, rotate: 22 }}
+            animate={{ scale: 1, opacity: 1, rotate: 14, y: [0, -10, 0] }}
+            transition={{ opacity: { duration: 0.8, delay: 0.1 }, scale: { duration: 1, delay: 0.1 }, rotate: { duration: 1, delay: 0.1 }, y: { duration: 8, repeat: Infinity, ease: 'easeInOut', delay: 1.2 } }}
+            style={{ filter: 'drop-shadow(0 12px 18px rgba(88,28,135,0.16))' }}
+            draggable={false}
+          />
+        </div>
 
         {/* Blob - 좌측 */}
         <div className="absolute left-[-2%] top-[5%] pointer-events-none z-10 hidden lg:block" style={{ marginTop: '0px', marginLeft: '0px' }}>
@@ -271,7 +298,7 @@ function App() {
           </motion.div>
         </div>
         <div className="relative z-20 w-full flex flex-col items-center text-center px-6">
-        <p className="mt-[69px] text-[11px] font-semibold tracking-[0.45em] uppercase mb-5" style={{ fontFamily: INTER, color: 'hsl(240, 4%, 48%)' }}>
+        <p className="mt-[76px] text-[11px] font-semibold tracking-[0.24em] uppercase mb-5 md:mt-[69px] md:tracking-[0.45em]" style={{ fontFamily: INTER, color: 'hsl(240, 4%, 48%)' }}>
           Reference &amp; Inspiration Archive
         </p>
 
@@ -309,18 +336,18 @@ function App() {
         </div>
 
         {/* ── 카테고리 버튼 (FlowRoe 스타일) ── */}
-        <div className="mt-8 mb-[24px] w-full max-w-[900px] relative -top-[7px]">
-          <div className="overflow-x-auto scrollbar-hide">
-            <div className="relative mx-auto flex items-start justify-center" style={{ gap: '30px' }}>
+        <div className="mobile-category-shell mt-8 mb-[24px] w-full max-w-[900px] relative -top-[7px]">
+          <div className="mobile-category-scroll overflow-x-auto scrollbar-hide">
+            <div className="mobile-category-grid relative mx-auto flex items-start justify-center" style={{ gap: '30px' }}>
               {/* 연결선 */}
-              <div className="pointer-events-none absolute left-[44px] right-[44px] top-[28px] h-[3px] -translate-y-1/2 bg-black/[0.07]" />
+              <div className="category-connector pointer-events-none absolute left-[44px] right-[44px] top-[28px] h-[3px] -translate-y-1/2 bg-black/[0.07]" />
 
               {/* ALL */}
               <button
                 onClick={() => setSelectedCategory('All')}
                 onMouseEnter={() => setHoveredCategory('All')}
                 onMouseLeave={() => setHoveredCategory(null)}
-                className="relative flex flex-col items-center gap-1 rounded-2xl py-2 transition-all duration-200 w-[88px]"
+                className="mobile-category-button relative flex flex-col items-center gap-1 rounded-2xl py-2 transition-all duration-200 w-[88px]"
                 style={{ fontFamily: INTER }}
               >
                 <div
@@ -355,7 +382,7 @@ function App() {
                     onClick={() => isCategoryEditMode ? handleEditCategory(cat) : setSelectedCategory(cat)}
                     onMouseEnter={() => setHoveredCategory(cat)}
                     onMouseLeave={() => setHoveredCategory(null)}
-                    className="relative flex flex-col items-center gap-1 rounded-2xl py-2 transition-all duration-200 w-[88px]"
+                    className="mobile-category-button relative flex flex-col items-center gap-1 rounded-2xl py-2 transition-all duration-200 w-[88px]"
                     style={{ fontFamily: INTER }}
                   >
                     <div
@@ -394,7 +421,7 @@ function App() {
               {isCategoryEditMode && (
                 <button
                   onClick={handleAddCategory}
-                  className="flex flex-col items-center gap-1 rounded-2xl py-2 transition-all duration-200 w-[88px]"
+                  className="mobile-category-button flex flex-col items-center gap-1 rounded-2xl py-2 transition-all duration-200 w-[88px]"
                   style={{ fontFamily: INTER }}
                 >
                   <div
